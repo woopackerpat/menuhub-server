@@ -28,5 +28,6 @@ router.post('/new', authenticate, restaurantController.createRestaurant);
 
 router.post('/menu/new/:restaurantid', authenticate, menuController.createMenu)
 router.patch('/menu/update/:menuid', authenticate, menuController.updateMenu)
+router.delete('/menu/delete/:menuid', authenticate, menuController.destroyMenu)
 
 module.exports = router;

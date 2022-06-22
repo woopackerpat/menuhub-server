@@ -76,3 +76,31 @@ exports.updateMenu = async (req, res, next) => {
     }
     
 }
+
+exports.destroyMenu = async (req, res, next) => {
+    try {
+        const menuId = req.params.menuid
+
+        const menuToDelete = await Menu.findOne({
+            where: {
+                id: menuId
+            }
+        });
+
+        menuToDelete.destroy()
+
+        const notDeleted = await Menu.findOne({
+            where: {
+                id: menuId
+            }
+        });
+
+        if (notDeleted) {
+            createError('Menu could not be deleted', 500)
+        }
+
+        res.status(201).json({ message: "Menu deleted" });
+    } catch (err) {
+        next(err)
+    }
+}
