@@ -1,4 +1,3 @@
-const error = require('../middlewares/error');
 const { Restaurant, Menu } = require('../models');
 
 // Fetch All Restaurants
@@ -9,16 +8,18 @@ exports.fetchAllRestaurantsOrdered = async (req, res, next) => {
         isDraft: false,
       },
       order: [['isOfficial', 'DESC']],
-      // include: {
-      //   model: Menu,
-      //   as: 'firstMenu',
-      //   where: {
-      //     orderNumber: 1,
-      //   },
-      // },
+      include: {
+        model: Menu,
+        as: 'Menus',
+        where: {
+          orderNumber: 1,
+        },
+      },
     });
 
-    res.status(201).json({ allRestaurant });
+    const hasRestaurant = allRestaurant.length;
+
+    res.status(201).json({ allRestaurant, hasRestaurant });
   } catch (err) {
     next(err);
   }
@@ -34,9 +35,16 @@ exports.fetchMyDraftRestaurants = async (req, res, next) => {
         userId,
         isDraft: true,
       },
+      include: {
+        model: Menu,
+        as: 'Menus',
+      }
     });
 
-    res.status(201).json({ foundMyDraftRestaurants });
+    const hasRestaurant = foundMyDraftRestaurants.length;
+
+    res.status(201).json({ foundMyDraftRestaurants, hasRestaurant });
+
   } catch (err) {
     next(err);
   }
@@ -52,7 +60,15 @@ exports.fetchMyCreatedRestaurants = async (req, res, next) => {
         userId,
         isDraft: false,
       },
+      include: {
+        model: Menu,
+        as: 'Menus',
+        where: {
+          orderNumber: 1,
+        },
+      },
     });
+
     const hasRestaurant = myCreatedRestaurants.length;
 
     res.status(201).json({ myCreatedRestaurants, hasRestaurant });
@@ -80,8 +96,9 @@ exports.createRestaurant = async (req, res, next) => {
     });
 
     const restaurantIdForMenus = createdRestaurant.id;
+    const restaurantNameForMenus = createdRestaurant.name;
 
-    res.status(201).json({ restaurantIdForMenus });
+    res.status(201).json({ restaurantIdForMenus, restaurantNameForMenus });
   } catch (err) {
     next(err);
   }

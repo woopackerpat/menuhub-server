@@ -1,5 +1,6 @@
 const express = require('express');
 const restaurantController = require('../controllers/restaurantController');
+const menuController = require('../controllers/menuController');
 const authenticate = require('../middlewares/authenticate');
 
 const router = express.Router();
@@ -21,7 +22,12 @@ router.get(
   restaurantController.fetchMyCreatedRestaurants
 );
 
+// Creating a new restaurant
 // Init a restaurant
 router.post('/new', authenticate, restaurantController.createRestaurant);
+
+router.post('/menu/new/:restaurantid', authenticate, menuController.createMenu)
+router.patch('/menu/update/:menuid', authenticate, menuController.updateMenu)
+router.delete('/menu/delete/:menuid', authenticate, menuController.destroyMenu)
 
 module.exports = router;
