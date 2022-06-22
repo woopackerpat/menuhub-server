@@ -3,7 +3,9 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 
+const authenticate = require('./middlewares/authenticate');
 const authRouter = require('./router/authRoute');
+const userRouter = require('./router/userRoute');
 const restaurantRouter = require('./router/restaurantRoute');
 const notFoundMiddleware = require('./middlewares/notFound');
 const errorMiddleware = require('./middlewares/error');
@@ -26,6 +28,7 @@ app.use(express.urlencoded({ extended: false }));
 // Routes
 app.use('/auth', authRouter);
 app.use('/restaurant', restaurantRouter);
+app.use('/user', authenticate, userRouter);
 
 // Error middlewares
 app.use(notFoundMiddleware);
