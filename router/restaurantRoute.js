@@ -27,5 +27,6 @@ router.get(
 router.post('/new', authenticate, restaurantController.createRestaurant);
 
 router.post('/menu/new/:restaurantid', authenticate, menuController.createMenu)
+router.patch('/menu/update/:menuid', authenticate, menuController.updateMenu)
 
 module.exports = router;

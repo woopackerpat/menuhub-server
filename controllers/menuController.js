@@ -29,10 +29,50 @@ exports.createMenu = async (req, res, next) => {
             imageUrl,
             description,
             orderNumber,
+            include: {
+                model: Restaurant,
+                attributes: ["name"]
+            }
         });
 
         res.status(201).json({ newMenu });
     } catch (err) {
         next(err)
     }
+}
+
+exports.updateMenu = async (req, res, next) => {
+    try {
+        
+        const menuId = req.params.menuid
+
+        const { title, imageUrl, description, orderNumber } = req.body
+
+        const toUpdateMenu = await Menu.findOne({
+            where: {
+                id: menuId
+            },
+            include: {
+                model: Restaurant,
+                attributes: ["name"]
+            }
+        });
+
+        if (title) {
+            toUpdateMenu.title = title
+        } if (imageUrl) {
+            toUpdateMenu.imageUrl = imageUrl
+        } if (description) {
+            toUpdateMenu.description = description
+        } if (orderNumber) {
+            toUpdateMenu.orderNumber = orderNumber
+        }
+        
+        const updatedMenu = await toUpdateMenu.save()
+        
+        res.status(201).json({ updatedMenu, message: "Up to Date" });
+    } catch (err) {
+        next(err)
+    }
+    
 }
