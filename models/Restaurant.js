@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       googleId: {
         type: DataTypes.STRING,
       },
-      isOffical: {
+      isOfficial: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
         allowNull: false,
