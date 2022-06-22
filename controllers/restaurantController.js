@@ -1,4 +1,3 @@
-const error = require('../middlewares/error');
 const { Restaurant, Menu } = require('../models');
 
 // Fetch All Restaurants
