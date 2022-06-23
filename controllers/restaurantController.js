@@ -11,9 +11,6 @@ exports.fetchAllRestaurantsOrdered = async (req, res, next) => {
       include: {
         model: Menu,
         as: 'Menus',
-        where: {
-          orderNumber: 1,
-        },
       },
     });
 
@@ -38,13 +35,12 @@ exports.fetchMyDraftRestaurants = async (req, res, next) => {
       include: {
         model: Menu,
         as: 'Menus',
-      }
+      },
     });
 
     const hasRestaurant = foundMyDraftRestaurants.length;
 
     res.status(201).json({ foundMyDraftRestaurants, hasRestaurant });
-
   } catch (err) {
     next(err);
   }
@@ -63,9 +59,6 @@ exports.fetchMyCreatedRestaurants = async (req, res, next) => {
       include: {
         model: Menu,
         as: 'Menus',
-        where: {
-          orderNumber: 1,
-        },
       },
     });
 
