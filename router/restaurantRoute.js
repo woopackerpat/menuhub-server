@@ -8,6 +8,9 @@ const router = express.Router();
 // Fetch All Ordered
 router.get('/all', restaurantController.fetchAllRestaurantsOrdered);
 
+// Fetch by Id
+router.get('/:restaurantid', restaurantController.fetchRestaurantById)
+
 // Fetch My Draft
 router.get(
   '/mydraft',
@@ -25,9 +28,12 @@ router.get(
 // Creating a new restaurant
 // Init a restaurant
 router.post('/new', authenticate, restaurantController.createRestaurant);
+router.patch('/:restaurantid', authenticate, restaurantController.updateRestaurant)
 
-router.post('/menu/new/:restaurantid', authenticate, menuController.createMenu)
-router.patch('/menu/update/:menuid', authenticate, menuController.updateMenu)
-router.delete('/menu/delete/:menuid', authenticate, menuController.destroyMenu)
+router.get('/menuall/:restaurantid', menuController.fetchMenus)
+router.get('/menu/:menuid', menuController.fetchMenuById)
+router.post('/menu/:restaurantid', authenticate, menuController.createMenu)
+router.patch('/menu/:menuid', authenticate, menuController.updateMenu)
+router.delete('/menu/:menuid', authenticate, menuController.destroyMenu)
 
 module.exports = router;
