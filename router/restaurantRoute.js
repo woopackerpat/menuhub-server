@@ -9,7 +9,7 @@ const router = express.Router();
 router.get('/all', restaurantController.fetchAllRestaurantsOrdered);
 
 // Fetch by Id
-router.get('/:restaurantid', restaurantController.fetchRestaurantById)
+router.get('/get/:restaurantid', restaurantController.fetchRestaurantById)
 
 // Fetch My Draft
 router.get(

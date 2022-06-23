@@ -34,7 +34,7 @@ exports.fetchAllRestaurantsOrdered = async (req, res, next) => {
 exports.fetchMyDraftRestaurants = async (req, res, next) => {
   try {
     const userId = req.user.id;
-
+    
     const foundMyDraftRestaurants = await Restaurant.findAll({
       where: {
         userId,
@@ -150,6 +150,10 @@ exports.fetchRestaurantById = async (req, res, next) => {
       ],
       order: [['isOfficial', 'DESC'], [Menu, 'orderNumber', 'ASC']],
     });
+
+    if (!foundRestaurant) {
+      createError('This restaurant does not exist', 404)
+    }
 
     res.status(200).json({ foundRestaurant });
   } catch (err) {
