@@ -1,4 +1,4 @@
-const { Restaurant, Menu } = require('../models');
+const { Restaurant, Menu, User } = require('../models');
 
 // Fetch All Restaurants
 exports.fetchAllRestaurantsOrdered = async (req, res, next) => {
@@ -12,6 +12,10 @@ exports.fetchAllRestaurantsOrdered = async (req, res, next) => {
         model: Menu,
         as: 'Menus',
       },
+      include: {
+        model: User,
+        attributes: ["id", "firstName", "lastName"]
+      }
     });
 
     const hasRestaurant = allRestaurant.length;
@@ -36,6 +40,10 @@ exports.fetchMyDraftRestaurants = async (req, res, next) => {
         model: Menu,
         as: 'Menus',
       },
+      include: {
+        model: User,
+        attributes: ["id", "firstName", "lastName"]
+      }
     });
 
     const hasRestaurant = foundMyDraftRestaurants.length;
@@ -60,6 +68,10 @@ exports.fetchMyCreatedRestaurants = async (req, res, next) => {
         model: Menu,
         as: 'Menus',
       },
+      include: {
+        model: User,
+        attributes: ["id", "firstName", "lastName"]
+      }
     });
 
     const hasRestaurant = myCreatedRestaurants.length;
