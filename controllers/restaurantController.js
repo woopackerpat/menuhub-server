@@ -8,15 +8,18 @@ exports.fetchAllRestaurantsOrdered = async (req, res, next) => {
       where: {
         isDraft: false,
       },
-      order: [['isOfficial', 'DESC']],
-      include: {
-        model: Menu,
-        as: 'Menus',
-      },
-      include: {
-        model: User,
-        attributes: ["id", "firstName", "lastName"]
-      }
+      include: [
+        {
+          model: Menu,
+          as: 'Menus',
+          attributes: ["orderNumber", "imageUrl"],
+        },
+        {
+          model: User,
+          attributes: ["id", "firstName", "lastName"]
+        }
+      ],
+      order: [['isOfficial', 'DESC'], [Menu, 'orderNumber', 'ASC']],
     });
 
     const hasRestaurant = allRestaurant.length;
@@ -37,14 +40,18 @@ exports.fetchMyDraftRestaurants = async (req, res, next) => {
         userId,
         isDraft: true,
       },
-      include: {
-        model: Menu,
-        as: 'Menus',
-      },
-      include: {
-        model: User,
-        attributes: ["id", "firstName", "lastName"]
-      }
+      include:  [
+        {
+          model: Menu,
+          as: 'Menus',
+          attributes: ["orderNumber", "imageUrl"],
+        },
+        {
+          model: User,
+          attributes: ["id", "firstName", "lastName"]
+        }
+      ],
+      order: [['isOfficial', 'DESC'], [Menu, 'orderNumber', 'ASC']],
     });
 
     const hasRestaurant = foundMyDraftRestaurants.length;
@@ -65,14 +72,18 @@ exports.fetchMyCreatedRestaurants = async (req, res, next) => {
         userId,
         isDraft: false,
       },
-      include: {
-        model: Menu,
-        as: 'Menus',
-      },
-      include: {
-        model: User,
-        attributes: ["id", "firstName", "lastName"]
-      }
+      include:  [
+        {
+          model: Menu,
+          as: 'Menus',
+          attributes: ["orderNumber", "imageUrl"],
+        },
+        {
+          model: User,
+          attributes: ["id", "firstName", "lastName"]
+        }
+      ],
+      order: [['isOfficial', 'DESC'], [Menu, 'orderNumber', 'ASC']],
     });
 
     const hasRestaurant = myCreatedRestaurants.length;
@@ -116,3 +127,32 @@ exports.createRestaurant = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.fetchRestaurantById = async (req, res, next) => {
+  try {
+
+    const restaurantId = req.params.restaurantid
+
+    const foundRestaurant = await Restaurant.findOne({
+      where: {
+        id: restaurantId
+      },
+      include:  [
+        {
+          model: Menu,
+          as: 'Menus',
+          attributes: ["orderNumber", "imageUrl"],
+        },
+        {
+          model: User,
+          attributes: ["id", "firstName", "lastName"]
+        }
+      ],
+      order: [['isOfficial', 'DESC'], [Menu, 'orderNumber', 'ASC']],
+    });
+
+    res.status(200).json({ foundRestaurant });
+  } catch (err) {
+    next(err)
+  }
+}
