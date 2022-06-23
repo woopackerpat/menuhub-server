@@ -1,4 +1,4 @@
-const { Restaurant, Menu } = require('../models');
+const { Restaurant, Menu, User } = require('../models');
 const createError = require('../utils/createError');
 
 exports.createMenu = async (req, res, next) => {
@@ -88,10 +88,96 @@ exports.destroyMenu = async (req, res, next) => {
       },
     });
 
-    menuToDelete.destroy();
+    await menuToDelete.destroy();
 
     res.status(204).json();
   } catch (err) {
     next(err);
   }
 };
+
+exports.fetchMenus = async (req, res, next) => {
+  try {
+    const restaurantId = req.params.restaurantid
+
+    const foundMenus = await Menu.findAll({
+      where: {
+        restaurantId
+      },
+      include: [
+        {
+          model: Restaurant,
+        }
+      ]
+    });
+
+    const restaurant = await Restaurant.findOne({
+      where: {
+        id: restaurantId
+      }
+    })
+
+    const userId = restaurant.dataValues.userId
+    console.log(userId)
+    const user = await User.findOne({
+      where: {
+        id: userId
+      },
+      attributes: ["id", "firstName", "lastName"]
+
+    })
+
+
+    const hasMenus = foundMenus.length
+
+    const result = {
+      "Menus": foundMenus,
+      "hasMenus": hasMenus,
+      "Creator": user
+    }
+
+    res.status(200).json(result)
+  } catch (err) {
+    next(err)
+  }
+}
+
+exports.fetchMenuById = async (req, res, next) => {
+  try {
+    const menuId = req.params.menuid
+
+    const menu = await Menu.findOne({
+      where: {
+        id: menuId
+      }
+    })
+
+    console.log(menu)
+    const restaurantId = menu.dataValues.restaurantId
+    
+    const restaurant = await Restaurant.findOne({
+      where: {
+        id: restaurantId
+      }
+    })
+
+    const userId = restaurant.dataValues.userId
+
+    const user = await User.findOne({
+      where: {
+        id: userId
+      },
+      attributes: ["id", "firstName", "lastName"]
+    })
+
+    const result = {
+      "Menu": menu,
+      "Restaurant": restaurant,
+      "Creator": user
+    }
+
+    res.status(200).json(result)
+  } catch (err) {
+    next(err)
+  }
+}
