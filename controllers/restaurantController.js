@@ -1,4 +1,5 @@
 const { Restaurant, Menu, User } = require('../models');
+const createError = require('../utils/createError');
 
 // Fetch All Restaurants
 exports.fetchAllRestaurantsOrdered = async (req, res, next) => {
@@ -89,7 +90,13 @@ exports.createRestaurant = async (req, res, next) => {
     console.log(userId);
     console.log(req.body);
 
-    const { name, longitude, latitude, googleId, category } = req.body;
+    const { name, longitude, latitude, googleId, category, isRequest } = req.body;
+
+    if (!name) {
+      createError('Name is required', 400);
+    } if (!category) {
+      createError('Category is requried', 400);
+    }
 
     const createdRestaurant = await Restaurant.create({
       name,
@@ -98,6 +105,7 @@ exports.createRestaurant = async (req, res, next) => {
       googleId,
       category,
       userId,
+      isRequest
     });
 
     const restaurantIdForMenus = createdRestaurant.id;
