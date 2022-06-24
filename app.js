@@ -11,8 +11,8 @@ const restaurantRouter = require('./router/restaurantRoute');
 const notFoundMiddleware = require('./middlewares/notFound');
 const errorMiddleware = require('./middlewares/error');
 
-// const { sequelize } = require('./models');
-// sequelize.sync({ alter: true });
+const { sequelize } = require('./models');
+sequelize.sync({ alter: true });
 
 const app = express();
 

@@ -33,32 +33,32 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: false,
         allowNull: false,
       },
-      category: {
-        type: DataTypes.ENUM(
-          'Thai',
-          'Isan',
-          'Japanese',
-          'Chinese',
-          'European',
-          'Italian',
-          'Asian',
-          'Indian',
-          'French',
-          'Mexican',
-          'Bakery',
-          'Breakfast',
-          'Noodle',
-          'Cafe',
-          'Buffet',
-          'Moo GaTa',
-          'Korean',
-          'Other'
-        ),
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
-      },
+      // category: {
+      //   type: DataTypes.ENUM(
+      //     'Thai',
+      //     'Isan',
+      //     'Japanese',
+      //     'Chinese',
+      //     'European',
+      //     'Italian',
+      //     'Asian',
+      //     'Indian',
+      //     'French',
+      //     'Mexican',
+      //     'Bakery',
+      //     'Breakfast',
+      //     'Noodle',
+      //     'Cafe',
+      //     'Buffet',
+      //     'Moo GaTa',
+      //     'Korean',
+      //     'Other'
+      //   ),
+      //   allowNull: false,
+      //   validate: {
+      //     notEmpty: true,
+      //   },
+      // },
       click: {
         type: DataTypes.INTEGER,
         defaultValue: 0,
@@ -98,6 +98,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Restaurant.belongsToMany(models.Pin, { through: 'Pin_Restaurant' });
+    Restaurant.belongsToMany(models.Category, { through: 'Category_Restaurant'});
   };
 
   return Restaurant;
