@@ -8,6 +8,7 @@ const authRouter = require('./router/authRoute');
 const userRouter = require('./router/userRoute');
 const pinRouter = require('./router/pinRoute');
 const restaurantRouter = require('./router/restaurantRoute');
+const categoryRouter = require('./router/categoryRoute');
 const notFoundMiddleware = require('./middlewares/notFound');
 const errorMiddleware = require('./middlewares/error');
 
@@ -31,6 +32,7 @@ app.use('/auth', authRouter);
 app.use('/restaurant', restaurantRouter);
 app.use('/user', authenticate, userRouter);
 app.use('/pin', pinRouter)
+app.use('/category', categoryRouter)
 
 // Error middlewares
 app.use(notFoundMiddleware);
