@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const authenticate = require('./middlewares/authenticate');
 const authRouter = require('./router/authRoute');
 const userRouter = require('./router/userRoute');
+const pinRouter = require('./router/pinRoute');
 const restaurantRouter = require('./router/restaurantRoute');
 const notFoundMiddleware = require('./middlewares/notFound');
 const errorMiddleware = require('./middlewares/error');
@@ -29,6 +30,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/auth', authRouter);
 app.use('/restaurant', restaurantRouter);
 app.use('/user', authenticate, userRouter);
+app.use('/pin', pinRouter)
 
 // Error middlewares
 app.use(notFoundMiddleware);
