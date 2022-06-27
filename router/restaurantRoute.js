@@ -3,6 +3,7 @@ const restaurantController = require('../controllers/restaurantController');
 const menuController = require('../controllers/menuController');
 const commentController = require('../controllers/commentController');
 const likeController = require('../controllers/likeController');
+const searchController = require('../controllers/searchController');
 const authenticate = require('../middlewares/authenticate');
 
 const router = express.Router();
@@ -43,5 +44,8 @@ router.patch('/comment', authenticate, commentController.updateComment)
 router.delete('/comment', authenticate, commentController.deleteComment)
 
 router.put('/like/:restaurantid', authenticate, likeController.cycleLike)
+
+router.get('/suggestions', searchController.suggestions)
+router.get('/search', searchController.search)
 
 module.exports = router;
