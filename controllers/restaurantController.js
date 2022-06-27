@@ -1,5 +1,4 @@
-const { Restaurant, Menu, User } = require('../models');
-const Category = require('../models/Category');
+const { Restaurant, Menu, User, Like, Category } = require('../models');
 const createError = require('../utils/createError');
 
 // Fetch All Restaurants
@@ -22,6 +21,10 @@ exports.fetchAllRestaurantsOrdered = async (req, res, next) => {
         {
           model: Category,
           as: 'Categories'
+        },
+        {
+          model: Like,
+          as: 'Likes'
         }
       ],
       order: [['isOfficial', 'DESC'], [Menu, 'orderNumber', 'ASC']],
@@ -58,6 +61,10 @@ exports.fetchMyDraftRestaurants = async (req, res, next) => {
         {
           model: Category,
           as: 'Categories'
+        },
+        {
+          model: Like,
+          as: 'Likes'
         }
       ],
       order: [['isOfficial', 'DESC'], [Menu, 'orderNumber', 'ASC']],
@@ -94,6 +101,10 @@ exports.fetchMyCreatedRestaurants = async (req, res, next) => {
         {
           model: Category,
           as: 'Categories'
+        },
+        {
+          model: Like,
+          as: 'Likes'
         }
       ],
       order: [['isOfficial', 'DESC'], [Menu, 'orderNumber', 'ASC']],
@@ -180,16 +191,28 @@ exports.fetchRestaurantById = async (req, res, next) => {
         {
           model: Category,
           as: 'Categories'
+        },
+        {
+          model: Like,
+          as: 'Likes'
         }
       ],
       order: [['isOfficial', 'DESC'], [Menu, 'orderNumber', 'ASC']],
     });
 
+    const likes = await Like.findAll({
+      where: {
+        restaurantId
+      }
+    })
+
+    const nLikes = likes.length
+
     if (!foundRestaurant) {
       createError('This restaurant does not exist', 404)
     }
 
-    res.status(200).json({ foundRestaurant });
+    res.status(200).json({ 'Restaurant': foundRestaurant, 'Number of Likes': nLikes });
   } catch (err) {
     next(err)
   }
