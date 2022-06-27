@@ -30,7 +30,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/auth', authRouter);
 app.use('/restaurant', restaurantRouter);
 app.use('/user', authenticate, userRouter);
-app.use('/pin', pinRouter)
+app.use('/pin', pinRouter);
 
 // Error middlewares
 app.use(notFoundMiddleware);
