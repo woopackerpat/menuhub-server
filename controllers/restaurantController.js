@@ -131,8 +131,11 @@ exports.createRestaurant = async (req, res, next) => {
       createError('Category is requried', 400);
     }
 
+    const lowercase = name.toLowerCase()
+
     const createdRestaurant = await Restaurant.create({
       name,
+      lowercase,
       longitude,
       latitude,
       googleId,
@@ -238,6 +241,7 @@ exports.updateRestaurant = async (req, res, next) => {
 
     if (name) {
       restaurantToUpdate.name = name
+      restaurantToUpdate.lowercase = name.toLowerCase()
     } 
     if (longitude) {
       restaurantToUpdate.longitude = longitude
