@@ -9,6 +9,32 @@ const genToken = payload =>
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
+exports.googleLogin = async (req, res, next) => {
+  try {
+    const { googleData } = req.body;
+    const payload = jwt.decode(googleData);
+    const existingUser = await User.findOne({
+      where: { googleId: payload.sub },
+    });
+    if (!existingUser) {
+      await User.create({
+        firstName: payload.given_name,
+        lastName: payload.family_name,
+        email: payload.email,
+        profilePicUrl: payload.picture,
+        googleId: payload.sub,
+      });
+    }
+    const user = await User.findOne({
+      where: { googleId: payload.sub },
+    });
+    const token = genToken({ id: user.id });
+    res.status(200).json({ token });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
