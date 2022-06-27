@@ -2,6 +2,7 @@ const express = require('express');
 const restaurantController = require('../controllers/restaurantController');
 const menuController = require('../controllers/menuController');
 const commentController = require('../controllers/commentController');
+const likeController = require('../controllers/likeController');
 const authenticate = require('../middlewares/authenticate');
 
 const router = express.Router();
@@ -40,5 +41,7 @@ router.delete('/menu/:menuid', authenticate, menuController.destroyMenu)
 router.post('/comment', authenticate, commentController.addComment)
 router.patch('/comment', authenticate, commentController.updateComment)
 router.delete('/comment', authenticate, commentController.deleteComment)
+
+router.put('/like/:restaurantid', authenticate, likeController.cycleLike)
 
 module.exports = router;

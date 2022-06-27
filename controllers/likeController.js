@@ -1,7 +1,7 @@
 const { Restaurant, Menu, User, Like } = require('../models');
 const createError = require('../utils/createError');
 
-exports.cycleComment = async (req, res, next) => {
+exports.cycleLike = async (req, res, next) => {
     try {
         const userId = req.user.id
         const restaurantId = req.params.restaurantid
