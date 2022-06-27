@@ -170,10 +170,21 @@ exports.fetchMenuById = async (req, res, next) => {
       attributes: ["id", "firstName", "lastName"]
     })
 
+    const comments = await Comment.findAll({
+      where: {
+        menuId
+      },
+      include: {
+        model: User,
+        attributes: ['firstName', 'lastName', 'id']
+      }
+    })
+
     const result = {
       "Menu": menu,
       "Restaurant": restaurant,
-      "Creator": user
+      "Creator": user,
+      "Commnets": comments
     }
 
     res.status(200).json(result)

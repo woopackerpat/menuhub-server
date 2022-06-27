@@ -1,6 +1,7 @@
 const express = require('express');
 const restaurantController = require('../controllers/restaurantController');
 const menuController = require('../controllers/menuController');
+const commentController = require('../controllers/commentController');
 const authenticate = require('../middlewares/authenticate');
 
 const router = express.Router();
@@ -35,5 +36,9 @@ router.get('/menu/:menuid', menuController.fetchMenuById)
 router.post('/menu/:restaurantid', authenticate, menuController.createMenu)
 router.patch('/menu/:menuid', authenticate, menuController.updateMenu)
 router.delete('/menu/:menuid', authenticate, menuController.destroyMenu)
+
+router.post('/comment', authenticate, commentController.addComment)
+router.patch('/comment', authenticate, commentController.updateComment)
+router.delete('/comment', authenticate, commentController.deleteComment)
 
 module.exports = router;
