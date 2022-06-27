@@ -172,7 +172,7 @@ exports.fetchMenuById = async (req, res, next) => {
 
     const comments = await Comment.findAll({
       where: {
-        restaurantId
+        menuId
       },
       include: {
         model: User,
