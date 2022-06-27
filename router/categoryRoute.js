@@ -6,5 +6,6 @@ const router = express.Router();
 
 router.post('', categoryController.createCategory)
 router.patch('', categoryController.destroyCategory)
+router.get('', categoryController.getCategories)
 
 module.exports = router
