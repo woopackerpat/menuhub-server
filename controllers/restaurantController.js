@@ -1,4 +1,5 @@
 const { Restaurant, Menu, User } = require('../models');
+const Category = require('../models/Category');
 const createError = require('../utils/createError');
 
 // Fetch All Restaurants
@@ -17,6 +18,10 @@ exports.fetchAllRestaurantsOrdered = async (req, res, next) => {
         {
           model: User,
           attributes: ["id", "firstName", "lastName"]
+        }, 
+        {
+          model: Category,
+          as: 'Categories'
         }
       ],
       order: [['isOfficial', 'DESC'], [Menu, 'orderNumber', 'ASC']],
@@ -49,6 +54,10 @@ exports.fetchMyDraftRestaurants = async (req, res, next) => {
         {
           model: User,
           attributes: ["id", "firstName", "lastName"]
+        },
+        {
+          model: Category,
+          as: 'Categories'
         }
       ],
       order: [['isOfficial', 'DESC'], [Menu, 'orderNumber', 'ASC']],
@@ -81,6 +90,10 @@ exports.fetchMyCreatedRestaurants = async (req, res, next) => {
         {
           model: User,
           attributes: ["id", "firstName", "lastName"]
+        },
+        {
+          model: Category,
+          as: 'Categories'
         }
       ],
       order: [['isOfficial', 'DESC'], [Menu, 'orderNumber', 'ASC']],
@@ -98,10 +111,8 @@ exports.fetchMyCreatedRestaurants = async (req, res, next) => {
 exports.createRestaurant = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    // console.log(userId);
-    // console.log(req.body);
 
-    const { name, longitude, latitude, googleId, category, isRequest } = req.body;
+    const { name, longitude, latitude, googleId, isRequest, categoryArr } = req.body;
 
     if (!name) {
       createError('Name is required', 400);
@@ -114,13 +125,32 @@ exports.createRestaurant = async (req, res, next) => {
       longitude,
       latitude,
       googleId,
-      category,
       userId,
       isRequest
     });
 
     const restaurantIdForMenus = createdRestaurant.id;
     const restaurantNameForMenus = createdRestaurant.name;
+
+    if (categoryArr) {
+      const catLength = categoryArr.length
+      for (let i = 0 ; i < catLength ; i++) {
+        
+        let foundCat = await Category.findOne({
+          where: {
+            name: categoryArr[i] 
+          }
+        });
+
+        if (foundCat) {
+          await createdRestaurant.addCategory(foundCat)
+        }
+
+        if (!foundCat) {
+          createError(`The category ${categoryArr[i]} does not exist`, 400)
+        }
+      }
+    }
 
     res.status(201).json({ restaurantIdForMenus, restaurantNameForMenus });
   } catch (err) {
@@ -146,6 +176,10 @@ exports.fetchRestaurantById = async (req, res, next) => {
         {
           model: User,
           attributes: ["id", "firstName", "lastName"]
+        },
+        {
+          model: Category,
+          as: 'Categories'
         }
       ],
       order: [['isOfficial', 'DESC'], [Menu, 'orderNumber', 'ASC']],
@@ -166,42 +200,57 @@ exports.updateRestaurant = async (req, res, next) => {
 
     const userId = req.user.id
     const restaurantId = req.params.restaurantid
-    const { name, longitude, latitude, googleId, category, isRequest, isDraft } = req.body;
+    const { name, longitude, latitude, googleId, isRequest, isDraft, categoryArr } = req.body;
 
-    const restaurantToUpdated = await Restaurant.findOne({
+    const restaurantToUpdate = await Restaurant.findOne({
       where: {
         id: restaurantId,
         userId
       }
     });
 
-    if (!restaurantToUpdated) {
+    if (!restaurantToUpdate) {
       createError('This restaurant does not exist', 400)
     }
 
     if (name) {
-      restaurantToUpdated.name = name
+      restaurantToUpdate.name = name
     } 
     if (longitude) {
-      restaurantToUpdated.longitude = longitude
+      restaurantToUpdate.longitude = longitude
     }
     if (latitude) {
-      restaurantToUpdated.latitude = latitude
+      restaurantToUpdate.latitude = latitude
     } 
     if (googleId) {
-      restaurantToUpdated.googleId = googleId
+      restaurantToUpdate.googleId = googleId
     }
-    if (category) {
-      restaurantToUpdated.category = category
-    } 
     if (isRequest) {
-      restaurantToUpdated.isRequest = category
+      restaurantToUpdate.isRequest = category
     }
     if (isDraft) {
-      restaurantToUpdated.isDraft = isDraft
+      restaurantToUpdate.isDraft = isDraft
     }
 
-    const updatedRestaurant = await restaurantToUpdated.save()
+    const catLength = categoryArr.length
+    for (let i = 0 ; i < catLength ; i++) {
+      let foundCat = await Category.findOne({
+        where: {
+          name: categoryArr[i] 
+        }
+      });
+
+      if (foundCat) {
+        await restaurantToUpdate.addCategory(foundCat)
+      }
+
+      if (!foundCat) {
+        createError(`The category ${categoryArr[i]} does not exist`, 400)
+      }
+    }
+
+
+    const updatedRestaurant = await restaurantToUpdate.save()
 
     res.status(201).json({ updatedRestaurant });
   } catch (err) {
