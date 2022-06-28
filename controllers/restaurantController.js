@@ -321,3 +321,27 @@ exports.updateRestaurant = async (req, res, next) => {
     next(err)
   }
 }
+
+exports.click = async (req, res, next) => {
+  try {
+    const restaurantId = req.params.restaurantid
+
+    const toClick = await Restaurant.findOne({
+      where: {
+        id: restaurantId
+      }
+    });
+
+    if (!toClick) {
+      createError('This restaurant does not exist', 404)
+    }
+
+    toClick.click = (toClick.click + 1)
+    
+    await toClick.save()
+
+    res.status(200).json()
+  } catch(err) {
+    next(err)
+  }
+}
