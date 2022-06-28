@@ -17,10 +17,10 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       longitude: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.DECIMAL(11,8),
       },
       latitude: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.DECIMAL(11,8),
       },
       googleId: {
         type: DataTypes.STRING,
