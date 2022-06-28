@@ -61,11 +61,11 @@ exports.fetchMyDraftRestaurants = async (req, res, next) => {
         {
           model: Category,
           as: 'Categories'
-        },
-        {
-          model: Like,
-          as: 'Likes'
         }
+        // {
+        //   model: Like,
+        //   as: 'Likes'
+        // }
       ],
       order: [['isOfficial', 'DESC'], [Menu, 'orderNumber', 'ASC']],
     });
