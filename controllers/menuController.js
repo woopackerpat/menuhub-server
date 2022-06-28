@@ -1,4 +1,4 @@
-const { Restaurant, Menu, User } = require('../models');
+const { Restaurant, Menu, User, Comment } = require('../models');
 const createError = require('../utils/createError');
 
 exports.createMenu = async (req, res, next) => {
@@ -107,6 +107,13 @@ exports.fetchMenus = async (req, res, next) => {
       include: [
         {
           model: Restaurant,
+        },
+        {
+          model: Comment,
+          as: 'Comments',
+          include: {
+            model: User,
+          }
         }
       ]
     });
