@@ -31,7 +31,7 @@ router.get(
 // Creating a new restaurant
 // Init a restaurant
 router.post('/new', authenticate, restaurantController.createRestaurant);
-router.patch('/:restaurantid', authenticate, restaurantController.updateRestaurant)
+router.patch('/update/:restaurantid', authenticate, restaurantController.updateRestaurant)
 
 router.get('/menuall/:restaurantid', menuController.fetchMenus)
 router.get('/menu/:menuid', menuController.fetchMenuById)

@@ -160,6 +160,9 @@ exports.fetchMenuById = async (req, res, next) => {
     })
 
     console.log(menu)
+    if (!menu) {
+      createError('This menu does not exist', 400)
+    }
     const restaurantId = menu.dataValues.restaurantId
     
     const restaurant = await Restaurant.findOne({
@@ -191,7 +194,7 @@ exports.fetchMenuById = async (req, res, next) => {
       "Menu": menu,
       "Restaurant": restaurant,
       "Creator": user,
-      "Commnets": comments
+      "Comments": comments
     }
 
     res.status(200).json(result)
