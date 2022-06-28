@@ -15,8 +15,8 @@ const distanceCalc = (center, lat, lng) => {
     latCenter = center.lat
     lngCenter = center.lng
     return geolib.getDistance(
-        {latitude: latCenter, longitude: lngCenter},
-        {latitude: lat, longitude: lngCenter}
+        { latitude: latCenter, longitude: lngCenter },
+        { latitude: lat, longitude: lngCenter }
     )
 }
 
