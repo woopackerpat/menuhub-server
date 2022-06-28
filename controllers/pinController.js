@@ -11,13 +11,16 @@ exports.createPin = async (req, res, next) => {
             userId
         });
 
-        const restaurantToAdd = await Restaurant.findOne({
-            where: {
-                id: restaurantId
-            }
-        });
+        if (restaurantId) {
+            const restaurantToAdd = await Restaurant.findOne({
+                where: {
+                    id: restaurantId
+                }
+            });
+            await newPin.addRestaurant(restaurantToAdd)
+        }
 
-        await newPin.addRestaurant(restaurantToAdd)
+
 
         res.status(201).json(newPin)
     } catch (err) {
