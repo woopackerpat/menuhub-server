@@ -57,12 +57,12 @@ exports.updatePin = async (req, res, next) => {
 exports.destroyPin = async (req, res, next) => {
     try {
         const userId = req.user.id;
-        const pinId = req.body;
+        const { pinId } = req.body;
 
         const pinToDestroy = await Pin.findOne({
             where: {
+                id: pinId,
                 userId,
-                id: pinId
             }
         });
 
