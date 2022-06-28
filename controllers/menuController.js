@@ -57,6 +57,10 @@ exports.updateMenu = async (req, res, next) => {
       },
     });
 
+    if (!toUpdateMenu) {
+      createError('This Menu does not exist', 400)
+    }
+
     if (title) {
       toUpdateMenu.title = title;
     }
