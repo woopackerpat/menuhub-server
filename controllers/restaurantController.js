@@ -61,11 +61,11 @@ exports.fetchMyDraftRestaurants = async (req, res, next) => {
         {
           model: Category,
           as: 'Categories'
-        },
-        {
-          model: Like,
-          as: 'Likes'
         }
+        // {
+        //   model: Like,
+        //   as: 'Likes'
+        // }
       ],
       order: [['isOfficial', 'DESC'], [Menu, 'orderNumber', 'ASC']],
     });
@@ -122,12 +122,11 @@ exports.fetchMyCreatedRestaurants = async (req, res, next) => {
 exports.createRestaurant = async (req, res, next) => {
   try {
     const userId = req.user.id;
-
     const { name, longitude, latitude, googleId, isRequest, categoryArr } = req.body;
 
     if (!name) {
       createError('Name is required', 400);
-    } if (!category) {
+    } if (!categoryArr) {
       createError('Category is requried', 400);
     }
 
@@ -228,10 +227,36 @@ exports.updateRestaurant = async (req, res, next) => {
     const restaurantId = req.params.restaurantid
     const { name, longitude, latitude, googleId, isRequest, isDraft, categoryArr } = req.body;
 
+    const resRemoveCat = await Restaurant.findOne({
+      where: {
+        id: restaurantId,
+        userId
+      },
+      include: {
+        model: Category
+      }
+    });
+    
+    const catRemove = await Category.findAll({
+      include: {
+        model: Restaurant,
+        where: {
+          id: restaurantId
+        }
+      }
+    })
+
+    await resRemoveCat.removeCategory(catRemove)
+
+    await resRemoveCat.save()
+
     const restaurantToUpdate = await Restaurant.findOne({
       where: {
         id: restaurantId,
         userId
+      },
+      include: {
+        model: Category
       }
     });
 
@@ -259,7 +284,9 @@ exports.updateRestaurant = async (req, res, next) => {
       restaurantToUpdate.isDraft = isDraft
     }
 
-    const catLength = categoryArr.length
+    const catLength = await categoryArr.length
+
+
     for (let i = 0 ; i < catLength ; i++) {
       let foundCat = await Category.findOne({
         where: {
@@ -275,9 +302,19 @@ exports.updateRestaurant = async (req, res, next) => {
         createError(`The category ${categoryArr[i]} does not exist`, 400)
       }
     }
+    
 
+    await restaurantToUpdate.save()
 
-    const updatedRestaurant = await restaurantToUpdate.save()
+    const updatedRestaurant = await Restaurant.findOne({
+      where: {
+        id: restaurantId,
+        userId
+      },
+      include: {
+        model: Category
+      }
+    });
 
     res.status(201).json({ updatedRestaurant });
   } catch (err) {

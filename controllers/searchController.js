@@ -2,22 +2,10 @@ const { Op } = require('sequelize');
 const { Restaurant, Menu, User, Category } = require('../models');
 const createError = require('../utils/createError');
 
-// const clickScore = (high, current) => {
-//     const denom = high * 100
-//     return denom / current
-// }
-
-// const matchScore = (refArr, comArr) => {
-//     const matchArr = refArr.filter(category => comArr.includes(category))
-//     return matchArr.length * 30
-// }
-
 const totalScore = (refArr, comArr, highClick, currentClick) => {
     const matchArr = refArr.filter(category => comArr.includes(category))
     const matchScore = matchArr.length * 30
-    // console.log(matchScore)
 
-    const denom = highClick * 100
     const clickScore = currentClick * 0.5
     return matchScore + clickScore
 }
@@ -79,21 +67,6 @@ exports.suggestions = async (req, res, next) => {
         let resultArr = []
 
         for (i = 0; i < allRestaurants.length; i++) {
-            // let currentRestaurant = allRestaurants[i]
-            
-            // const refArr = refRestaurant.Categories
-            // let comArr = currentRestaurant.Categories
-
-            // const highClick = refHighClick.click
-            // let currentClick = currentRestaurant.click
-
-            // let score = totalScore(refArr, comArr, highClick, currentClick)
-            // let newPair = { Score: score }
-
-            // currentRestaurant = { ...currentRestaurant, Score: score }
-
-            // resultArr.push(currentRestaurant)
-            ////////////////////////////////////////////////////////////////////
             let currentRestaurant = allRestaurants[i]
             
             const refArr = refRestaurant.Categories

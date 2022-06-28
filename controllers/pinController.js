@@ -11,13 +11,16 @@ exports.createPin = async (req, res, next) => {
             userId
         });
 
-        const restaurantToAdd = await Restaurant.findOne({
-            where: {
-                id: restaurantId
-            }
-        });
+        if (restaurantId) {
+            const restaurantToAdd = await Restaurant.findOne({
+                where: {
+                    id: restaurantId
+                }
+            });
+            await newPin.addRestaurant(restaurantToAdd)
+        }
 
-        await newPin.addRestaurant(restaurantToAdd)
+
 
         res.status(201).json(newPin)
     } catch (err) {
@@ -54,12 +57,12 @@ exports.updatePin = async (req, res, next) => {
 exports.destroyPin = async (req, res, next) => {
     try {
         const userId = req.user.id;
-        const pinId = req.body;
+        const { pinId } = req.body;
 
         const pinToDestroy = await Pin.findOne({
             where: {
+                id: pinId,
                 userId,
-                id: pinId
             }
         });
 

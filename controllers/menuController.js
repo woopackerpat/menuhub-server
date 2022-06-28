@@ -1,4 +1,4 @@
-const { Restaurant, Menu, User } = require('../models');
+const { Restaurant, Menu, User, Comment } = require('../models');
 const createError = require('../utils/createError');
 
 exports.createMenu = async (req, res, next) => {
@@ -35,7 +35,7 @@ exports.createMenu = async (req, res, next) => {
       },
     });
 
-    res.status(201).json({ newMenu });
+    res.status(201).json({ newMenu, isUpdate: true });
   } catch (err) {
     next(err);
   }
@@ -57,6 +57,10 @@ exports.updateMenu = async (req, res, next) => {
       },
     });
 
+    if (!toUpdateMenu) {
+      createError('This Menu does not exist', 400)
+    }
+
     if (title) {
       toUpdateMenu.title = title;
     }
@@ -72,7 +76,7 @@ exports.updateMenu = async (req, res, next) => {
 
     const updatedMenu = await toUpdateMenu.save();
 
-    res.status(201).json({ updatedMenu, message: 'Up to Date' });
+    res.status(201).json({ updatedMenu, isUpdate: true });
   } catch (err) {
     next(err);
   }
@@ -107,6 +111,13 @@ exports.fetchMenus = async (req, res, next) => {
       include: [
         {
           model: Restaurant,
+        },
+        {
+          model: Comment,
+          as: 'Comments',
+          include: {
+            model: User,
+          }
         }
       ]
     });
@@ -153,6 +164,9 @@ exports.fetchMenuById = async (req, res, next) => {
     })
 
     console.log(menu)
+    if (!menu) {
+      createError('This menu does not exist', 400)
+    }
     const restaurantId = menu.dataValues.restaurantId
     
     const restaurant = await Restaurant.findOne({
@@ -184,7 +198,7 @@ exports.fetchMenuById = async (req, res, next) => {
       "Menu": menu,
       "Restaurant": restaurant,
       "Creator": user,
-      "Commnets": comments
+      "Comments": comments
     }
 
     res.status(200).json(result)
