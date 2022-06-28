@@ -1,4 +1,4 @@
-const { Restaurant, Menu, User } = require('../models');
+const { Restaurant, Menu, User, Comment } = require('../models');
 const createError = require('../utils/createError');
 
 exports.addComment = async (req, res, next) => {
