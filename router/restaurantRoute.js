@@ -47,5 +47,6 @@ router.put('/like/:restaurantid', authenticate, likeController.cycleLike)
 
 router.get('/suggestions', searchController.suggestions)
 router.get('/search', searchController.search)
+router.get('/map', searchController.map)
 
 module.exports = router;
