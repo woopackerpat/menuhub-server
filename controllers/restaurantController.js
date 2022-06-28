@@ -67,7 +67,7 @@ exports.fetchMyDraftRestaurants = async (req, res, next) => {
         //   as: 'Likes'
         // }
       ],
-      order: [['isOfficial', 'DESC'], [Menu, 'orderNumber', 'ASC']],
+      order: [['isOfficial', 'DESC'],['createdAt', 'DESC'], [Menu, 'orderNumber', 'ASC']],
     });
 
     const hasRestaurant = foundMyDraftRestaurants.length;
@@ -107,7 +107,7 @@ exports.fetchMyCreatedRestaurants = async (req, res, next) => {
           as: 'Likes'
         }
       ],
-      order: [['isOfficial', 'DESC'], [Menu, 'orderNumber', 'ASC']],
+      order: [['isOfficial', 'DESC'], ['createdAt', 'DESC'], [Menu, 'orderNumber', 'ASC']],
     });
 
     const hasRestaurant = myCreatedRestaurants.length;
