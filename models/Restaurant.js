@@ -17,13 +17,22 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       longitude: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
       },
       latitude: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
       },
       googleId: {
         type: DataTypes.STRING,
+      },
+      number: {
+        type: DataTypes.INTEGER,
+      },
+      lineId: {
+        type: DataTypes.STRING,
+      },
+      address: {
+        type: DataTypes.STRING
       },
       isOfficial: {
         type: DataTypes.BOOLEAN,
@@ -40,32 +49,6 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: false,
         allowNull: false,
       },
-      // category: {
-      //   type: DataTypes.ENUM(
-      //     'Thai',
-      //     'Isan',
-      //     'Japanese',
-      //     'Chinese',
-      //     'European',
-      //     'Italian',
-      //     'Asian',
-      //     'Indian',
-      //     'French',
-      //     'Mexican',
-      //     'Bakery',
-      //     'Breakfast',
-      //     'Noodle',
-      //     'Cafe',
-      //     'Buffet',
-      //     'Moo GaTa',
-      //     'Korean',
-      //     'Other'
-      //   ),
-      //   allowNull: false,
-      //   validate: {
-      //     notEmpty: true,
-      //   },
-      // },
       click: {
         type: DataTypes.INTEGER,
         defaultValue: 0,
