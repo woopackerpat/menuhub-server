@@ -1,7 +1,7 @@
 const { Op } = require('sequelize');
 const { Restaurant, Menu, User, Category } = require('../models');
 const createError = require('../utils/createError');
-const geolib = require('geolib')
+const { getDistance } = require('geolib')
 
 const totalScore = (refArr, comArr, currentClick) => {
     const matchArr = refArr.filter(category => comArr.includes(category))
@@ -11,13 +11,34 @@ const totalScore = (refArr, comArr, currentClick) => {
     return matchScore + clickScore
 }
 
+// const distanceCalc = (center, lat, lng) => {
+//     latCenter = center.lat
+//     lngCenter = center.lng
+//     console.log(center.lat)
+//     const distance = getDistance(
+//         { latitude: latCenter, longitude: lngCenter },
+//         { latitude: lat, longitude: lngCenter }
+//     )
+//     return distance
+// }
 const distanceCalc = (center, lat, lng) => {
     latCenter = center.lat
-    lngCenter = center.lng
-    return geolib.getDistance(
-        { latitude: latCenter, longitude: lngCenter },
-        { latitude: lat, longitude: lngCenter }
-    )
+    lngCenter = center.lng 
+
+    const lat1 = latCenter
+    const lat2 = lat
+    const lon1 = lngCenter
+    const lon2 = lng
+
+    const R = 6371;
+    const dLat = ((lat2 - lat1)*1) * Math.PI / 180;
+    const dLon = ((lon2 - lon1)*1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const d = R * c;
+    return Math.round(d*1000);
 }
 
 exports.search = async (req, res, next) => {
@@ -109,34 +130,46 @@ exports.map = async (req, res, next) => {
 
         const maxLat = ne.lat
         const minLat = sw.lat
-
+        
         const maxLng = ne.lng
         const minLng = sw.lng
 
         const foundRestaurants = await Restaurant.findAll({
             where: {
                 latitude: {
-                    [Op.between]: [maxLat, minLat]
+                    [Op.and]: {
+                        [Op.gt]: minLat,
+                        [Op.lt]: maxLat
+                    }
                 },
                 longitude: {
-                    [Op.between]: [maxLng, minLng]
+                    [Op.and]: {
+                        [Op.gt]: minLng,
+                        [Op.lt]: maxLng
+                    }
                 },
                 isDraft: false,
-                include: [
-                    {
-                        model: Menu,
-                        as: "Menus"
-                    }
-                ]
-            }
+            },
+            include: [
+                {
+                    model: Menu,
+                    as: "Menus"
+                },
+                {
+                    model: User
+                }
+            ]
         });
+
+        const maxDistance = distanceCalc(center, maxLat, minLng)
 
         let mapList = []
 
         for (let i = 0; i < foundRestaurants.length; i++) {
-            let lngDistance = foundRestaurants[i].lng
-            let latDistance = foundRestaurants[i].lat
+            let lngDistance = foundRestaurants[i].longitude
+            let latDistance = foundRestaurants[i].latitude
 
+            console.log(foundRestaurants[i].latitude)
             let distance = distanceCalc(center, latDistance, lngDistance)
 
             let {
@@ -151,20 +184,23 @@ exports.map = async (req, res, next) => {
                 Menus
             } = foundRestaurants[i]
 
-            let listRestaurant = {
-                distance,
-                name,
-                longitude,
-                latitude,
-                googleId,
-                number,
-                lineId,
-                address,
-                isOfficial,
-                Menus
+            if (distance < maxDistance) {
+                let listRestaurant = {
+                    distance,
+                    name,
+                    longitude,
+                    latitude,
+                    googleId,
+                    number,
+                    lineId,
+                    address,
+                    isOfficial,
+                    Menus
+                }
+    
+                mapList.push(listRestaurant)
             }
 
-            mapList.push(listRestaurant)
         }
 
         const result = mapList.sort((a, b) => {
@@ -172,6 +208,7 @@ exports.map = async (req, res, next) => {
         })
 
         res.status(200).json(result)
+
     } catch (err) {
         next(err)
     }
