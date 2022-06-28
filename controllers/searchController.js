@@ -169,7 +169,6 @@ exports.map = async (req, res, next) => {
             let lngDistance = foundRestaurants[i].longitude
             let latDistance = foundRestaurants[i].latitude
 
-            console.log(foundRestaurants[i].latitude)
             let distance = distanceCalc(center, latDistance, lngDistance)
 
             let {
