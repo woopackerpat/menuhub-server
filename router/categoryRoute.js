@@ -5,7 +5,7 @@ const categoryController = require('../controllers/categoryController')
 const router = express.Router();
 
 router.post('', categoryController.createCategory)
-router.patch('', categoryController.destroyCategory)
+router.delete('', categoryController.destroyCategory)
 router.get('', categoryController.getCategories)
 
 module.exports = router
