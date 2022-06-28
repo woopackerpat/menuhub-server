@@ -35,7 +35,7 @@ exports.createMenu = async (req, res, next) => {
       },
     });
 
-    res.status(201).json({ newMenu });
+    res.status(201).json({ newMenu, isUpdate: true });
   } catch (err) {
     next(err);
   }
@@ -76,7 +76,7 @@ exports.updateMenu = async (req, res, next) => {
 
     const updatedMenu = await toUpdateMenu.save();
 
-    res.status(201).json({ updatedMenu, message: 'Up to Date' });
+    res.status(201).json({ updatedMenu, isUpdate: true });
   } catch (err) {
     next(err);
   }
