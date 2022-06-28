@@ -27,7 +27,7 @@ exports.fetchAllRestaurantsOrdered = async (req, res, next) => {
           as: 'Likes'
         }
       ],
-      order: [['isOfficial', 'DESC'], [Menu, 'orderNumber', 'ASC']],
+      order: [['isOfficial', 'DESC'], ['createdAt', 'DESC'], [Menu, 'orderNumber', 'ASC']],
     });
 
     const hasRestaurant = allRestaurant.length;
@@ -67,7 +67,7 @@ exports.fetchMyDraftRestaurants = async (req, res, next) => {
         //   as: 'Likes'
         // }
       ],
-      order: [['isOfficial', 'DESC'], [Menu, 'orderNumber', 'ASC']],
+      order: [['isOfficial', 'DESC'],['createdAt', 'DESC'], [Menu, 'orderNumber', 'ASC']],
     });
 
     const hasRestaurant = foundMyDraftRestaurants.length;
@@ -107,7 +107,7 @@ exports.fetchMyCreatedRestaurants = async (req, res, next) => {
           as: 'Likes'
         }
       ],
-      order: [['isOfficial', 'DESC'], [Menu, 'orderNumber', 'ASC']],
+      order: [['isOfficial', 'DESC'], ['createdAt', 'DESC'], [Menu, 'orderNumber', 'ASC']],
     });
 
     const hasRestaurant = myCreatedRestaurants.length;
@@ -318,6 +318,30 @@ exports.updateRestaurant = async (req, res, next) => {
 
     res.status(201).json({ updatedRestaurant });
   } catch (err) {
+    next(err)
+  }
+}
+
+exports.click = async (req, res, next) => {
+  try {
+    const restaurantId = req.params.restaurantid
+
+    const toClick = await Restaurant.findOne({
+      where: {
+        id: restaurantId
+      }
+    });
+
+    if (!toClick) {
+      createError('This restaurant does not exist', 404)
+    }
+
+    toClick.click = (toClick.click + 1)
+    
+    await toClick.save()
+
+    res.status(200).json()
+  } catch(err) {
     next(err)
   }
 }

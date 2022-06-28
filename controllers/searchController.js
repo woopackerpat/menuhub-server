@@ -3,7 +3,7 @@ const { Restaurant, Menu, User, Category } = require('../models');
 const createError = require('../utils/createError');
 const geolib = require('geolib')
 
-const totalScore = (refArr, comArr, highClick, currentClick) => {
+const totalScore = (refArr, comArr, currentClick) => {
     const matchArr = refArr.filter(category => comArr.includes(category))
     const matchScore = matchArr.length * 30
 
@@ -15,8 +15,8 @@ const distanceCalc = (center, lat, lng) => {
     latCenter = center.lat
     lngCenter = center.lng
     return geolib.getDistance(
-        {latitude: latCenter, longitude: lngCenter},
-        {latitude: lat, longitude: lngCenter}
+        { latitude: latCenter, longitude: lngCenter },
+        { latitude: lat, longitude: lngCenter }
     )
 }
 
@@ -69,11 +69,6 @@ exports.suggestions = async (req, res, next) => {
             attributes: ['name', 'id', 'click']
         });
 
-        const refHighClick = await Restaurant.findAll({
-            orderBy: ['click', 'DESC'],
-            limit: 1
-        })
-
         let resultArr = []
 
         for (i = 0; i < allRestaurants.length; i++) {
@@ -82,10 +77,9 @@ exports.suggestions = async (req, res, next) => {
             const refArr = refRestaurant.Categories
             let comArr = currentRestaurant.Categories
 
-            const highClick = refHighClick.click
             let currentClick = currentRestaurant.click
 
-            let score = totalScore(refArr, comArr, highClick, currentClick)
+            let score = totalScore(refArr, comArr, currentClick)
 
             const { click, name, id } = currentRestaurant
 
