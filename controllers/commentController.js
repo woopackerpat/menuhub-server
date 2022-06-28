@@ -40,6 +40,10 @@ exports.deleteComment = async (req, res, next) => {
             }
         });
 
+        if (!commentToDelete) {
+            createError('This comment does not exist', 404)
+        }
+
         await commentToDelete.destroy()
 
         res.status(204).json();
@@ -56,6 +60,7 @@ exports.updateComment = async (req, res, next) => {
         if (!text) {
             createError('A comment cannot be empty', 400)
         }
+
         
         const commentToUpdate = await Comment.findOne({
             where: {
@@ -63,7 +68,10 @@ exports.updateComment = async (req, res, next) => {
                 userId
             }
         });
-
+        
+        if (!commentToUpdate) {
+            createError('This comment does not exist', 404)
+        }
         commentToUpdate.text = text
 
         const updatedComment = await commentToUpdate.save();
