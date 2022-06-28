@@ -13,23 +13,17 @@ exports.cycleLike = async (req, res, next) => {
             }
         });
 
-        // const foundRestaurant = await Restaurant.findOne({
-        //     where: {
-        //         id: restaurantId
-        //     }
-        // });
-
         if (!foundLike) {
             await Like.create({
                 userId,
                 restaurantId
             })
-            res.status(200).json({"Message": "Liked"})
+            res.status(200).json({"Message": "Liked", Like: true})
         }
 
         if (foundLike) {
             await foundLike.destroy()
-            res.status(200).json({"Message": "Like deleted"})
+            res.status(200).json({"Message": "Like deleted", Like: false})
         }
     } catch (err) {
         next(err)
