@@ -345,3 +345,44 @@ exports.click = async (req, res, next) => {
     next(err)
   }
 }
+
+exports.approve = async (req, res, next) => {
+  try {
+    const id = req.params.restaurantid
+    const {approve} = req.body
+    const updatedRestaurant = await Restaurant.findOne({
+      where: {
+        id
+      }
+    })
+    console.log(approve)
+    if (approve) {
+      updatedRestaurant.isRequest = false
+      updatedRestaurant.isOfficial = true
+      await updatedRestaurant.save()
+      res.status(200).json({isApproved: 1})
+    }
+    if (!approve) {
+      updatedRestaurant.isRequest = false
+      updatedRestaurant.isOfficial = false
+      await updatedRestaurant.save()
+      res.status(200).json({isApproved: 0})
+    }
+  } catch (err) {
+    next(err)
+  }
+}
+
+exports.fetchRequests = async (req, res, next) => {
+  try {
+    const isRequest = await Restaurant.findAll({
+      where: {
+        isRequest: 1
+      }
+    })
+
+    res.status(200).json(isRequest)
+  } catch (err) {
+    next(err)
+  }
+}

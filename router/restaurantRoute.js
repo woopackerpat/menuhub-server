@@ -5,6 +5,7 @@ const commentController = require('../controllers/commentController');
 const likeController = require('../controllers/likeController');
 const searchController = require('../controllers/searchController');
 const authenticate = require('../middlewares/authenticate');
+const admin = require('../middlewares/admin');
 
 const router = express.Router();
 
@@ -49,5 +50,8 @@ router.put('/like/:restaurantid', authenticate, likeController.cycleLike)
 router.post('/suggestions', searchController.suggestions)
 router.post('/search', searchController.search)
 router.post('/map', searchController.map)
+
+router.patch('/approve/:restaurantid', authenticate, admin, restaurantController.approve)
+router.get('/requests', authenticate, admin, restaurantController.fetchRequests)
 
 module.exports = router;
