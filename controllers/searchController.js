@@ -11,19 +11,9 @@ const totalScore = (refArr, comArr, currentClick) => {
     return matchScore + clickScore
 }
 
-// const distanceCalc = (center, lat, lng) => {
-//     latCenter = center.lat
-//     lngCenter = center.lng
-//     console.log(center.lat)
-//     const distance = getDistance(
-//         { latitude: latCenter, longitude: lngCenter },
-//         { latitude: lat, longitude: lngCenter }
-//     )
-//     return distance
-// }
 const distanceCalc = (center, lat, lng) => {
     latCenter = center.lat
-    lngCenter = center.lng 
+    lngCenter = center.lng
 
     const lat1 = latCenter
     const lat2 = lat
@@ -31,14 +21,14 @@ const distanceCalc = (center, lat, lng) => {
     const lon2 = lng
 
     const R = 6371;
-    const dLat = ((lat2 - lat1)*1) * Math.PI / 180;
-    const dLon = ((lon2 - lon1)*1) * Math.PI / 180;
+    const dLat = ((lat2 - lat1) * 1) * Math.PI / 180;
+    const dLon = ((lon2 - lon1) * 1) * Math.PI / 180;
     const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
         Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
         Math.sin(dLon / 2) * Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const d = R * c;
-    return Math.round(d*1000);
+    return Math.round(d * 1000);
 }
 
 exports.search = async (req, res, next) => {
@@ -130,7 +120,7 @@ exports.map = async (req, res, next) => {
 
         const maxLat = ne.lat
         const minLat = sw.lat
-        
+
         const maxLng = ne.lng
         const minLng = sw.lng
 
@@ -196,17 +186,50 @@ exports.map = async (req, res, next) => {
                     isOfficial,
                     Menus
                 }
-    
+
                 mapList.push(listRestaurant)
             }
 
         }
 
-        const result = mapList.sort((a, b) => {
-            return a.distance - b.distance
+        const resultArr = mapList.sort((a, b) => {
+            let isOfficialA = a.isOfficial
+            let isOfficialB = b.isOfficial
+
+            let distanceA = a.distance
+            let distanceB = b.distance
+
+            // if (distanceA > distanceB) return 1
+            // if (distanceA < distanceB) return -1
+            // if (isOfficialA === isOfficialB) {
+            //     return 0
+            // } else if (isOfficialA) {
+            //     return -1
+            // } else {
+            //     return 1
+            // }
+
+            if (isOfficialA && isOfficialB) {
+                if (distanceA < distanceB) {
+                    return -1
+                }
+                if (distanceA > distanceB) {
+                    return 1
+                }
+            }
+            if (!isOfficialA && !isOfficialB) {
+                if (distanceA < distanceB) {
+                    return -1
+                }
+                if (distanceA > distanceB) {
+                    return 1
+                }
+            }
+            if (isOfficialA) return -1
+            if (!isOfficialA) return 1
         })
 
-        res.status(200).json(result)
+        res.status(200).json(resultArr)
 
     } catch (err) {
         next(err)
