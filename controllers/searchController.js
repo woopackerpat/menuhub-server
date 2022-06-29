@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { Restaurant, Menu, User, Category } = require('../models');
+const { Restaurant, Menu, User, Category, sequelize } = require('../models');
 const createError = require('../utils/createError');
 const { getDistance } = require('geolib')
 
@@ -124,7 +124,7 @@ exports.map = async (req, res, next) => {
         const maxLng = ne.lng
         const minLng = sw.lng
 
-        const foundRestaurants = await Restaurant.findAll({
+        const officialRestaurants = await Restaurant.findAll({
             where: {
                 latitude: {
                     [Op.and]: {
@@ -139,6 +139,7 @@ exports.map = async (req, res, next) => {
                     }
                 },
                 isDraft: false,
+                isOfficial: true
             },
             include: [
                 {
@@ -146,11 +147,44 @@ exports.map = async (req, res, next) => {
                     as: "Menus"
                 },
                 {
-                    model: User
+                    model: User,
+                    attributes: ['id', 'firstName', 'lastName']
                 }
-            ]
+            ],
         });
 
+        const userRestaurants = await Restaurant.findAll({
+            where: {
+                latitude: {
+                    [Op.and]: {
+                        [Op.gt]: minLat,
+                        [Op.lt]: maxLat
+                    }
+                },
+                longitude: {
+                    [Op.and]: {
+                        [Op.gt]: minLng,
+                        [Op.lt]: maxLng
+                    }
+                },
+                isDraft: false,
+                isOfficial: false
+            },
+            include: [
+                {
+                    model: Menu,
+                    as: "Menus"
+                },
+                {
+                    model: User,
+                    attributes: ['id', 'firstName', 'lastName']
+                }
+            ],
+        });
+
+        console.log(officialRestaurants)
+        const temp = [...officialRestaurants, ...userRestaurants]
+        const foundRestaurants = [...new Set(temp)]
         const maxDistance = distanceCalc(center, maxLat, minLng)
 
         let mapList = []
@@ -163,6 +197,7 @@ exports.map = async (req, res, next) => {
 
             let {
                 name,
+                id,
                 longitude,
                 latitude,
                 googleId,
@@ -170,12 +205,14 @@ exports.map = async (req, res, next) => {
                 lineId,
                 address,
                 isOfficial,
-                Menus
+                Menus,
+                User
             } = foundRestaurants[i]
 
             if (distance < maxDistance) {
                 let listRestaurant = {
                     distance,
+                    id,
                     name,
                     longitude,
                     latitude,
@@ -184,7 +221,8 @@ exports.map = async (req, res, next) => {
                     lineId,
                     address,
                     isOfficial,
-                    Menus
+                    Menus,
+                    User
                 }
 
                 mapList.push(listRestaurant)
@@ -229,7 +267,8 @@ exports.map = async (req, res, next) => {
             if (!isOfficialA) return 1
         })
 
-        res.status(200).json(resultArr)
+        // console.log(foundRestaurants)
+        res.status(201).json(resultArr)
 
     } catch (err) {
         next(err)
