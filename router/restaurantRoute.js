@@ -46,8 +46,8 @@ router.delete('/comment', authenticate, commentController.deleteComment)
 
 router.put('/like/:restaurantid', authenticate, likeController.cycleLike)
 
-router.get('/suggestions', searchController.suggestions)
-router.get('/search', searchController.search)
-router.get('/map', searchController.map)
+router.post('/suggestions', searchController.suggestions)
+router.post('/search', searchController.search)
+router.post('/map', searchController.map)
 
 module.exports = router;
