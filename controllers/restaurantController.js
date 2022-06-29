@@ -122,7 +122,7 @@ exports.fetchMyCreatedRestaurants = async (req, res, next) => {
 exports.createRestaurant = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const { name, longitude, latitude, googleId, isRequest, categoryArr } = req.body;
+    const { name, longitude, latitude, googleId, lineId, number, address, isRequest, categoryArr } = req.body;
 
     if (!name) {
       createError('Name is required', 400);
@@ -138,6 +138,9 @@ exports.createRestaurant = async (req, res, next) => {
       longitude,
       latitude,
       googleId,
+      number,
+      lineId,
+      address,
       userId,
       isRequest
     });
