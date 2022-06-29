@@ -182,9 +182,17 @@ exports.map = async (req, res, next) => {
             ],
         });
 
-        console.log(officialRestaurants)
         const temp = [...officialRestaurants, ...userRestaurants]
-        const foundRestaurants = [...new Set(temp)]
+        const filter = []
+        const foundRestaurants = temp.filter(restaurant => {
+            const isDupe = filter.includes(restaurant.name)
+            if (!isDupe) {
+                filter.push(restaurant.name) 
+                return true
+            }
+            return false
+        })
+        
         const maxDistance = distanceCalc(center, maxLat, minLng)
 
         let mapList = []
