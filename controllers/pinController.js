@@ -159,6 +159,8 @@ exports.addToPin = async (req, res, next) => {
             }
         });
 
+	console.log(foundPin)
+	console.log(restaurantToAdd)
         await foundPin.addRestaurant(restaurantToAdd)
         const updatedPin = await Pin.findOne({
             where: {
