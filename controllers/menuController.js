@@ -82,6 +82,30 @@ exports.updateMenu = async (req, res, next) => {
   }
 };
 
+exports.updateImageMenu = async (req, res, next) => {
+  try {
+    const {menuId, imageUrl} = req.body
+
+    const toUpdateMenu = await Menu.findOne({
+      where: {
+        id: menuId,
+      },
+      include: {
+        model: Restaurant,
+        attributes: ['name'],
+      },
+    });
+
+    toUpdateMenu.imageUrl = imageUrl
+
+    await toUpdateMenu.save()
+
+    res.status(200).json(toUpdateMenu)
+  } catch(err) {
+    next(err)
+  }
+}
+
 exports.destroyMenu = async (req, res, next) => {
   try {
     const menuId = req.params.menuid;

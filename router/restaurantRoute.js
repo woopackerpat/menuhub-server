@@ -39,6 +39,7 @@ router.get('/menuall/:restaurantid', menuController.fetchMenus)
 router.get('/menu/:menuid', menuController.fetchMenuById)
 router.post('/menu/:restaurantid', authenticate, menuController.createMenu)
 router.patch('/menu/:menuid', authenticate, menuController.updateMenu)
+router.patch('/menuimage', authenticate, menuController.updateImageMenu)
 router.delete('/menu/:menuid', authenticate, menuController.destroyMenu)
 router.patch('/menuorder', menuController.modMenuOrder)
 
