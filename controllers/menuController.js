@@ -168,7 +168,7 @@ exports.fetchMenuById = async (req, res, next) => {
       createError('This menu does not exist', 400)
     }
     const restaurantId = menu.dataValues.restaurantId
-    
+
     const restaurant = await Restaurant.findOne({
       where: {
         id: restaurantId
@@ -202,6 +202,42 @@ exports.fetchMenuById = async (req, res, next) => {
     }
 
     res.status(200).json(result)
+  } catch (err) {
+    next(err)
+  }
+}
+
+exports.modMenuOrder = async (req, res, next) => {
+  try {
+    const { newOrder, restaurantId } = req.body
+
+    for (let i = 0; i < newOrder.length; i++) {
+      if (newOrder[i].menuId) {
+
+        const updateMenu = await Menu.findOne({
+          where: {
+            id: newOrder[i].menuId,
+          }
+        });
+
+        updateMenu.orderNumber = newOrder[i].orderNumber
+
+        await updateMenu.save()
+      }
+
+    }
+
+    const updatedOrder = await Menu.findAll({
+      where: {
+        restaurantId
+      },
+      attributes: [
+        'id',
+        'orderNumber'
+      ]
+    })
+
+    res.status(201).json(updatedOrder)
   } catch (err) {
     next(err)
   }
