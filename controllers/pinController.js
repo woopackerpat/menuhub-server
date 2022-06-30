@@ -1,5 +1,5 @@
 const createError = require("../utils/createError")
-const { User, Pin, Restaurant } = require("../models")
+const { User, Pin, Restaurant, Menu } = require("../models")
 
 exports.createPin = async (req, res, next) => {
   try {
