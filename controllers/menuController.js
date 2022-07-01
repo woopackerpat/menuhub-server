@@ -143,7 +143,8 @@ exports.fetchMenus = async (req, res, next) => {
             model: User,
           }
         }
-      ]
+      ],
+      order: ['orderNumber', 'ASC']
     });
 
     const restaurant = await Restaurant.findOne({
