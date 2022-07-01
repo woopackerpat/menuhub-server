@@ -282,17 +282,21 @@ exports.modMenuOrder = async (req, res, next) => {
     const { newOrder, restaurantId } = req.body
 
     for (let i = 0; i < newOrder.length; i++) {
-      if (newOrder[i].menuId) {
+      
+      if (newOrder[i].id) {
 
         const updateMenu = await Menu.findOne({
           where: {
-            id: newOrder[i].menuId,
+            id: newOrder[i].id,
           }
         });
 
-        updateMenu.orderNumber = newOrder[i].orderNumber
+        if (updateMenu) {
+          updateMenu.orderNumber = newOrder[i].orderNumber
+  
+          await updateMenu.save()
+        }
 
-        await updateMenu.save()
       }
 
     }
