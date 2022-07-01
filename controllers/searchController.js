@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { Restaurant, Menu, User, Category, sequelize } = require('../models');
+const { Restaurant, Menu, User, Category, Like } = require('../models');
 const createError = require('../utils/createError');
 const { getDistance } = require('geolib')
 
