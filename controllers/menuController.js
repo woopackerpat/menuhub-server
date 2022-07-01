@@ -251,7 +251,7 @@ exports.fetchMenuById = async (req, res, next) => {
       where: {
         id: userId
       },
-      attributes: ["id", "firstName", "lastName"]
+      attributes: ["id", "firstName", "lastName", 'profilePicUrl']
     })
 
     const comments = await Comment.findAll({
