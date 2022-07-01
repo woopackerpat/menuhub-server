@@ -42,7 +42,26 @@ exports.search = async (req, res, next) => {
                 lowercase: {
                     [Op.substring]: `${lowercaseSearch}`
                 }
-            }
+            },
+            include: [
+                {
+                    model: Menu,
+                    as: 'Menus',
+                    attributes: ["orderNumber", "imageUrl"],
+                },
+                {
+                    model: User,
+                    attributes: ["id", "firstName", "lastName", 'profilePicUrl']
+                },
+                {
+                    model: Category,
+                    as: 'Categories'
+                },
+                {
+                    model: Like,
+                    as: 'Likes'
+                }
+            ],
         });
 
         res.status(200).json(foundByName)
@@ -59,10 +78,25 @@ exports.suggestions = async (req, res, next) => {
             where: {
                 id: refId
             },
-            include: {
-                model: Category,
-                as: "Categories"
-            }
+            include: [
+                {
+                    model: Menu,
+                    as: 'Menus',
+                    attributes: ["orderNumber", "imageUrl"],
+                },
+                {
+                    model: User,
+                    attributes: ["id", "firstName", "lastName", 'profilePicUrl']
+                },
+                {
+                    model: Category,
+                    as: 'Categories'
+                },
+                {
+                    model: Like,
+                    as: 'Likes'
+                }
+            ],
         })
 
         const nameLowercase = name.toLowerCase()
@@ -142,70 +176,104 @@ exports.map = async (req, res, next) => {
                 isOfficial: true
             },
             include: [
-                {
-                    model: Menu,
-                    as: "Menus"
-                },
-                {
-                    model: User,
-                    attributes: ['id', 'firstName', 'lastName']
-                }
-            ],
-        });
-
-        const userRestaurants = await Restaurant.findAll({
-            where: {
-                latitude: {
-                    [Op.and]: {
-                        [Op.gt]: minLat,
-                        [Op.lt]: maxLat
-                    }
-                },
-                longitude: {
-                    [Op.and]: {
-                        [Op.gt]: minLng,
-                        [Op.lt]: maxLng
-                    }
-                },
-                isDraft: false,
-                isOfficial: false
+            {
+                model: Menu,
+                as: 'Menus',
+                attributes: ["orderNumber", "imageUrl"],
             },
-            include: [
-                {
-                    model: Menu,
-                    as: "Menus"
-                },
-                {
-                    model: User,
-                    attributes: ['id', 'firstName', 'lastName']
-                }
-            ],
+            {
+                model: User,
+                attributes: ["id", "firstName", "lastName", 'profilePicUrl']
+            },
+            {
+                model: Category,
+                as: 'Categories'
+            },
+            {
+                model: Like,
+                as: 'Likes'
+            }
+        ],
         });
 
-        const temp = [...officialRestaurants, ...userRestaurants]
-        const filter = []
-        const foundRestaurants = temp.filter(restaurant => {
-            const isDupe = filter.includes(restaurant.name)
-            if (!isDupe) {
-                filter.push(restaurant.name) 
-                return true
-            }
-            return false
-        })
-        
-        const maxDistance = distanceCalc(center, maxLat, minLng)
+    const userRestaurants = await Restaurant.findAll({
+        where: {
+            latitude: {
+                [Op.and]: {
+                    [Op.gt]: minLat,
+                    [Op.lt]: maxLat
+                }
+            },
+            longitude: {
+                [Op.and]: {
+                    [Op.gt]: minLng,
+                    [Op.lt]: maxLng
+                }
+            },
+            isDraft: false,
+            isOfficial: false
+        },
+        include: [
+          {
+            model: Menu,
+            as: 'Menus',
+            attributes: ["orderNumber", "imageUrl"],
+          },
+          {
+            model: User,
+            attributes: ["id", "firstName", "lastName", 'profilePicUrl']
+          }, 
+          {
+            model: Category,
+            as: 'Categories'
+          },
+          {
+            model: Like,
+            as: 'Likes'
+          }
+        ],
+    });
 
-        let mapList = []
+    const temp = [...officialRestaurants, ...userRestaurants]
+    const filter = []
+    const foundRestaurants = temp.filter(restaurant => {
+        const isDupe = filter.includes(restaurant.name)
+        if (!isDupe) {
+            filter.push(restaurant.name)
+            return true
+        }
+        return false
+    })
 
-        for (let i = 0; i < foundRestaurants.length; i++) {
-            let lngDistance = foundRestaurants[i].longitude
-            let latDistance = foundRestaurants[i].latitude
+    const maxDistance = distanceCalc(center, maxLat, minLng)
 
-            let distance = distanceCalc(center, latDistance, lngDistance)
+    let mapList = []
 
-            let {
-                name,
+    for (let i = 0; i < foundRestaurants.length; i++) {
+        let lngDistance = foundRestaurants[i].longitude
+        let latDistance = foundRestaurants[i].latitude
+
+        let distance = distanceCalc(center, latDistance, lngDistance)
+
+        let {
+            name,
+            id,
+            longitude,
+            latitude,
+            googleId,
+            number,
+            lineId,
+            address,
+            isOfficial,
+            Menus,
+            User
+        } = foundRestaurants[i]
+
+        if (distance < maxDistance) {
+            let listRestaurant = {
+                distance,
                 id,
+                name,
                 longitude,
                 latitude,
                 googleId,
@@ -215,70 +283,54 @@ exports.map = async (req, res, next) => {
                 isOfficial,
                 Menus,
                 User
-            } = foundRestaurants[i]
-
-            if (distance < maxDistance) {
-                let listRestaurant = {
-                    distance,
-                    id,
-                    name,
-                    longitude,
-                    latitude,
-                    googleId,
-                    number,
-                    lineId,
-                    address,
-                    isOfficial,
-                    Menus,
-                    User
-                }
-
-                mapList.push(listRestaurant)
             }
 
+            mapList.push(listRestaurant)
         }
 
-        const resultArr = mapList.sort((a, b) => {
-            let isOfficialA = a.isOfficial
-            let isOfficialB = b.isOfficial
-
-            let distanceA = a.distance
-            let distanceB = b.distance
-
-            // if (distanceA > distanceB) return 1
-            // if (distanceA < distanceB) return -1
-            // if (isOfficialA === isOfficialB) {
-            //     return 0
-            // } else if (isOfficialA) {
-            //     return -1
-            // } else {
-            //     return 1
-            // }
-
-            if (isOfficialA && isOfficialB) {
-                if (distanceA < distanceB) {
-                    return -1
-                }
-                if (distanceA > distanceB) {
-                    return 1
-                }
-            }
-            if (!isOfficialA && !isOfficialB) {
-                if (distanceA < distanceB) {
-                    return -1
-                }
-                if (distanceA > distanceB) {
-                    return 1
-                }
-            }
-            if (isOfficialA) return -1
-            if (!isOfficialA) return 1
-        })
-
-        // console.log(foundRestaurants)
-        res.status(201).json(resultArr)
-
-    } catch (err) {
-        next(err)
     }
+
+    const resultArr = mapList.sort((a, b) => {
+        let isOfficialA = a.isOfficial
+        let isOfficialB = b.isOfficial
+
+        let distanceA = a.distance
+        let distanceB = b.distance
+
+        // if (distanceA > distanceB) return 1
+        // if (distanceA < distanceB) return -1
+        // if (isOfficialA === isOfficialB) {
+        //     return 0
+        // } else if (isOfficialA) {
+        //     return -1
+        // } else {
+        //     return 1
+        // }
+
+        if (isOfficialA && isOfficialB) {
+            if (distanceA < distanceB) {
+                return -1
+            }
+            if (distanceA > distanceB) {
+                return 1
+            }
+        }
+        if (!isOfficialA && !isOfficialB) {
+            if (distanceA < distanceB) {
+                return -1
+            }
+            if (distanceA > distanceB) {
+                return 1
+            }
+        }
+        if (isOfficialA) return -1
+        if (!isOfficialA) return 1
+    })
+
+    // console.log(foundRestaurants)
+    res.status(201).json(resultArr)
+
+} catch (err) {
+    next(err)
+}
 }
