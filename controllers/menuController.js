@@ -31,7 +31,7 @@ exports.createMenu = async (req, res, next) => {
       orderNumber,
       include: {
         model: Restaurant,
-        attributes: ['name'],
+        attributes: ['name', 'userId'],
       },
     });
 
@@ -44,6 +44,7 @@ exports.createMenu = async (req, res, next) => {
 exports.updateMenu = async (req, res, next) => {
   try {
     const menuId = req.params.menuid;
+    const userId = req.user.id
 
     const { title, imageUrl, description, orderNumber } = req.body;
 
@@ -53,12 +54,23 @@ exports.updateMenu = async (req, res, next) => {
       },
       include: {
         model: Restaurant,
-        attributes: ['name'],
+        attributes: ['name', 'id'],
       },
     });
 
+    const checkRestaurant = await Restaurant.findOne({
+      where: {
+        userId,
+        id: toUpdateMenu.Restaurant.id
+      }
+    })
+
     if (!toUpdateMenu) {
-      createError('This Menu does not exist', 400)
+      createError('This Menu does not exist', 404)
+    }
+
+    if (!checkRestaurant) {
+      createError('This Menu does not belong to you', 400)
     }
 
     if (title) {
