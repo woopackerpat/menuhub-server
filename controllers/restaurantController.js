@@ -284,8 +284,11 @@ exports.updateRestaurant = async (req, res, next) => {
     if (isRequest) {
       restaurantToUpdate.isRequest = category
     }
-    if (isDraft) {
-      restaurantToUpdate.isDraft = isDraft
+    if (isDraft === 'publish') {
+      restaurantToUpdate.isDraft = true
+    }
+    if (isDraft === 'unpublish') {
+      restaurantToUpdate.isDraft = false
     }
     if (websiteUrl) {
       restaurantToUpdate.isDraft = websiteUrl
