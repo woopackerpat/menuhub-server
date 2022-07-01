@@ -16,7 +16,7 @@ exports.fetchAllRestaurantsOrdered = async (req, res, next) => {
         },
         {
           model: User,
-          attributes: ["id", "firstName", "lastName"]
+          attributes: ["id", "firstName", "lastName", 'profilePicUrl']
         }, 
         {
           model: Category,
