@@ -291,22 +291,24 @@ exports.updateRestaurant = async (req, res, next) => {
       restaurantToUpdate.isDraft = websiteUrl
     }
 
-    const catLength = await categoryArr.length
-
-
-    for (let i = 0 ; i < catLength ; i++) {
-      let foundCat = await Category.findOne({
-        where: {
-          name: categoryArr[i] 
+    if (categoryArr) {
+      const catLength = await categoryArr.length
+  
+  
+      for (let i = 0 ; i < catLength ; i++) {
+        let foundCat = await Category.findOne({
+          where: {
+            name: categoryArr[i] 
+          }
+        });
+  
+        if (foundCat) {
+          await restaurantToUpdate.addCategory(foundCat)
         }
-      });
-
-      if (foundCat) {
-        await restaurantToUpdate.addCategory(foundCat)
-      }
-
-      if (!foundCat) {
-        createError(`The category ${categoryArr[i]} does not exist`, 400)
+  
+        if (!foundCat) {
+          createError(`The category ${categoryArr[i]} does not exist`, 400)
+        }
       }
     }
     

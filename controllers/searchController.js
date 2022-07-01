@@ -35,7 +35,7 @@ exports.search = async (req, res, next) => {
     try {
         const { search } = req.body
 
-        const lowercaseSearch = search.toString().toLowerCase()
+        const lowercaseSearch = search.toLowerCase()
 
         const foundByName = await Restaurant.findAll({
             where: {
