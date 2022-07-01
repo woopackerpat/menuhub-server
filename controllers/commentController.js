@@ -31,7 +31,7 @@ exports.addComment = async (req, res, next) => {
 exports.deleteComment = async (req, res, next) => {
     try {
         const userId = req.user.id
-        const {commentId} = req.body
+        const {commentId} = req.params.commentid
 
         const commentToDelete = await Comment.findOne({
             where: {

@@ -45,7 +45,7 @@ router.patch('/menuorder', menuController.modMenuOrder)
 
 router.post('/comment', authenticate, commentController.addComment)
 router.patch('/comment', authenticate, commentController.updateComment)
-router.delete('/comment', authenticate, commentController.deleteComment)
+router.delete('/comment/:commentid', authenticate, commentController.deleteComment)
 
 router.put('/like/:restaurantid', authenticate, likeController.cycleLike)
 
