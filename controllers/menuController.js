@@ -104,9 +104,24 @@ exports.updateImageMenu = async (req, res, next) => {
       },
       include: {
         model: Restaurant,
-        attributes: ['name'],
+        attributes: ['name', 'id'],
       },
     });
+
+    const checkRestaurant = await Restaurant.findOne({
+      where: {
+        userId,
+        id: toUpdateMenu.Restaurant.id
+      }
+    })
+
+    if (!toUpdateMenu) {
+      createError('This Menu does not exist', 404)
+    }
+
+    if (!checkRestaurant) {
+      createError('This Restaurant does not belong to you', 400)
+    }
 
     toUpdateMenu.imageUrl = imageUrl
 
