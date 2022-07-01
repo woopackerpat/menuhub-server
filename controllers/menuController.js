@@ -191,7 +191,7 @@ exports.fetchMenus = async (req, res, next) => {
           }
         }
       ],
-      order: ['orderNumber', 'ASC']
+      order: [['orderNumber', 'ASC']]
     });
 
     const restaurant = await Restaurant.findOne({
@@ -200,8 +200,7 @@ exports.fetchMenus = async (req, res, next) => {
       }
     })
 
-    const userId = restaurant.dataValues.userId
-    console.log(userId)
+    const userId = restaurant.userId
     const user = await User.findOne({
       where: {
         id: userId
@@ -306,7 +305,7 @@ exports.modMenuOrder = async (req, res, next) => {
         'id',
         'orderNumber'
       ],
-      order: ['orderNumber', 'ASC']
+      order: [['orderNumber', 'ASC']]
     })
 
     res.status(201).json(updatedOrder)
