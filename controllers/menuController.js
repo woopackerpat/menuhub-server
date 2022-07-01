@@ -96,6 +96,7 @@ exports.updateMenu = async (req, res, next) => {
 
 exports.updateImageMenu = async (req, res, next) => {
   try {
+    const userId = req.user.id
     const {menuId, imageUrl} = req.body
 
     const toUpdateMenu = await Menu.findOne({
@@ -135,13 +136,32 @@ exports.updateImageMenu = async (req, res, next) => {
 
 exports.destroyMenu = async (req, res, next) => {
   try {
+    const userId = req.user.id
     const menuId = req.params.menuid;
 
     const menuToDelete = await Menu.findOne({
       where: {
         id: menuId,
       },
+      include: {
+        model: Restaurant
+      }
     });
+    
+    const checkRestaurant = await Restaurant.findOne({
+      where: {
+        userId,
+        id: menuToDelete.Restaurant.id
+      }
+    })
+
+    if (!menuToDelete) {
+      createError('This Menu does not exist', 404)
+    }
+
+    if (!checkRestaurant) {
+      createError('This Restaurant does not belong to you', 400)
+    }
 
     await menuToDelete.destroy();
 
@@ -214,7 +234,6 @@ exports.fetchMenuById = async (req, res, next) => {
       }
     })
 
-    console.log(menu)
     if (!menu) {
       createError('This menu does not exist', 400)
     }
