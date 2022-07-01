@@ -34,6 +34,9 @@ module.exports = (sequelize, DataTypes) => {
       address: {
         type: DataTypes.STRING
       },
+      websiteUrl: {
+        type: DataTypes.STRING
+      },
       isOfficial: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
