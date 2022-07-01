@@ -72,7 +72,7 @@ exports.search = async (req, res, next) => {
 
 exports.suggestions = async (req, res, next) => {
     try {
-        const { refId, name } = req.body
+        const { refId } = req.body
 
         const refRestaurant = await Restaurant.findOne({
             where: {
@@ -99,12 +99,16 @@ exports.suggestions = async (req, res, next) => {
             ],
         })
 
-        const nameLowercase = name.toLowerCase()
+        if (!refRestaurant) {
+            createError('This restaurant does not exist', 404)
+        }
+
+        const nameLowercase = refRestaurant.name.toString().toLowerCase()
 
         let allRestaurants = await Restaurant.findAll({
             where: {
                 lowercase: {
-                    [Op.notLike]: `${nameLowercase}`
+                    [Op.notLike]: `%${nameLowercase}%`
                 }
             },
             include: {
@@ -138,7 +142,7 @@ exports.suggestions = async (req, res, next) => {
             resultArr.push(listRestaurant)
         }
 
-        const result = resultArr.slice(0, 10).sort((a, b) => {
+        const result = resultArr.sort((a, b) => {
             return b.Score - a.Score
         })
 
@@ -176,104 +180,88 @@ exports.map = async (req, res, next) => {
                 isOfficial: true
             },
             include: [
-            {
-                model: Menu,
-                as: 'Menus',
-                attributes: ["orderNumber", "imageUrl"],
-            },
-            {
-                model: User,
-                attributes: ["id", "firstName", "lastName", 'profilePicUrl']
-            },
-            {
-                model: Category,
-                as: 'Categories'
-            },
-            {
-                model: Like,
-                as: 'Likes'
-            }
-        ],
+                {
+                    model: Menu,
+                    as: 'Menus',
+                    attributes: ["orderNumber", "imageUrl"],
+                },
+                {
+                    model: User,
+                    attributes: ["id", "firstName", "lastName", 'profilePicUrl']
+                },
+                {
+                    model: Category,
+                    as: 'Categories'
+                },
+                {
+                    model: Like,
+                    as: 'Likes'
+                }
+            ],
         });
 
-    const userRestaurants = await Restaurant.findAll({
-        where: {
-            latitude: {
-                [Op.and]: {
-                    [Op.gt]: minLat,
-                    [Op.lt]: maxLat
-                }
+        const userRestaurants = await Restaurant.findAll({
+            where: {
+                latitude: {
+                    [Op.and]: {
+                        [Op.gt]: minLat,
+                        [Op.lt]: maxLat
+                    }
+                },
+                longitude: {
+                    [Op.and]: {
+                        [Op.gt]: minLng,
+                        [Op.lt]: maxLng
+                    }
+                },
+                isDraft: false,
+                isOfficial: false
             },
-            longitude: {
-                [Op.and]: {
-                    [Op.gt]: minLng,
-                    [Op.lt]: maxLng
+            include: [
+                {
+                    model: Menu,
+                    as: 'Menus',
+                    attributes: ["orderNumber", "imageUrl"],
+                },
+                {
+                    model: User,
+                    attributes: ["id", "firstName", "lastName", 'profilePicUrl']
+                },
+                {
+                    model: Category,
+                    as: 'Categories'
+                },
+                {
+                    model: Like,
+                    as: 'Likes'
                 }
-            },
-            isDraft: false,
-            isOfficial: false
-        },
-        include: [
-          {
-            model: Menu,
-            as: 'Menus',
-            attributes: ["orderNumber", "imageUrl"],
-          },
-          {
-            model: User,
-            attributes: ["id", "firstName", "lastName", 'profilePicUrl']
-          }, 
-          {
-            model: Category,
-            as: 'Categories'
-          },
-          {
-            model: Like,
-            as: 'Likes'
-          }
-        ],
-    });
+            ],
+        });
 
-    const temp = [...officialRestaurants, ...userRestaurants]
-    const filter = []
-    const foundRestaurants = temp.filter(restaurant => {
-        const isDupe = filter.includes(restaurant.name)
-        if (!isDupe) {
-            filter.push(restaurant.name)
-            return true
-        }
-        return false
-    })
+        const temp = [...officialRestaurants, ...userRestaurants]
+        const filter = []
+        const foundRestaurants = temp.filter(restaurant => {
+            const isDupe = filter.includes(restaurant.name)
+            if (!isDupe) {
+                filter.push(restaurant.name)
+                return true
+            }
+            return false
+        })
 
-    const maxDistance = distanceCalc(center, maxLat, minLng)
+        const maxDistance = distanceCalc(center, maxLat, minLng)
 
-    let mapList = []
+        let mapList = []
 
-    for (let i = 0; i < foundRestaurants.length; i++) {
-        let lngDistance = foundRestaurants[i].longitude
-        let latDistance = foundRestaurants[i].latitude
+        for (let i = 0; i < foundRestaurants.length; i++) {
+            let lngDistance = foundRestaurants[i].longitude
+            let latDistance = foundRestaurants[i].latitude
 
-        let distance = distanceCalc(center, latDistance, lngDistance)
+            let distance = distanceCalc(center, latDistance, lngDistance)
 
-        let {
-            name,
-            id,
-            longitude,
-            latitude,
-            googleId,
-            number,
-            lineId,
-            address,
-            isOfficial,
-            Menus,
-            User
-        } = foundRestaurants[i]
-
-        if (distance < maxDistance) {
-            let listRestaurant = {
-                distance,
-                id,
+            let {
                 name,
+                id,
                 longitude,
                 latitude,
                 googleId,
@@ -283,54 +271,70 @@ exports.map = async (req, res, next) => {
                 isOfficial,
                 Menus,
                 User
+            } = foundRestaurants[i]
+
+            if (distance < maxDistance) {
+                let listRestaurant = {
+                    distance,
+                    id,
+                    name,
+                    longitude,
+                    latitude,
+                    googleId,
+                    number,
+                    lineId,
+                    address,
+                    isOfficial,
+                    Menus,
+                    User
+                }
+
+                mapList.push(listRestaurant)
             }
 
-            mapList.push(listRestaurant)
         }
 
+        const resultArr = mapList.sort((a, b) => {
+            let isOfficialA = a.isOfficial
+            let isOfficialB = b.isOfficial
+
+            let distanceA = a.distance
+            let distanceB = b.distance
+
+            // if (distanceA > distanceB) return 1
+            // if (distanceA < distanceB) return -1
+            // if (isOfficialA === isOfficialB) {
+            //     return 0
+            // } else if (isOfficialA) {
+            //     return -1
+            // } else {
+            //     return 1
+            // }
+
+            if (isOfficialA && isOfficialB) {
+                if (distanceA < distanceB) {
+                    return -1
+                }
+                if (distanceA > distanceB) {
+                    return 1
+                }
+            }
+            if (!isOfficialA && !isOfficialB) {
+                if (distanceA < distanceB) {
+                    return -1
+                }
+                if (distanceA > distanceB) {
+                    return 1
+                }
+            }
+            if (isOfficialA) return -1
+            if (!isOfficialA) return 1
+        })
+
+        // console.log(foundRestaurants)
+        res.status(201).json(resultArr)
+
+    } catch (err) {
+        next(err)
     }
-
-    const resultArr = mapList.sort((a, b) => {
-        let isOfficialA = a.isOfficial
-        let isOfficialB = b.isOfficial
-
-        let distanceA = a.distance
-        let distanceB = b.distance
-
-        // if (distanceA > distanceB) return 1
-        // if (distanceA < distanceB) return -1
-        // if (isOfficialA === isOfficialB) {
-        //     return 0
-        // } else if (isOfficialA) {
-        //     return -1
-        // } else {
-        //     return 1
-        // }
-
-        if (isOfficialA && isOfficialB) {
-            if (distanceA < distanceB) {
-                return -1
-            }
-            if (distanceA > distanceB) {
-                return 1
-            }
-        }
-        if (!isOfficialA && !isOfficialB) {
-            if (distanceA < distanceB) {
-                return -1
-            }
-            if (distanceA > distanceB) {
-                return 1
-            }
-        }
-        if (isOfficialA) return -1
-        if (!isOfficialA) return 1
-    })
-
-    // console.log(foundRestaurants)
-    res.status(201).json(resultArr)
-
-} catch (err) {
-    next(err)
-}
 }
