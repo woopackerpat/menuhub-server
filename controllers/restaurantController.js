@@ -122,7 +122,7 @@ exports.fetchMyCreatedRestaurants = async (req, res, next) => {
 exports.createRestaurant = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const { name, longitude, latitude, googleId, lineId, number, address, isRequest, categoryArr } = req.body;
+    const { name, longitude, latitude, googleId, lineId, number, address, isRequest, categoryArr, websiteUrl } = req.body;
 
     if (!name) {
       createError('Name is required', 400);
@@ -142,7 +142,8 @@ exports.createRestaurant = async (req, res, next) => {
       lineId,
       address,
       userId,
-      isRequest
+      isRequest,
+      websiteUrl
     });
 
     const restaurantIdForMenus = createdRestaurant.id;
@@ -228,7 +229,7 @@ exports.updateRestaurant = async (req, res, next) => {
 
     const userId = req.user.id
     const restaurantId = req.params.restaurantid
-    const { name, longitude, latitude, googleId, isRequest, isDraft, categoryArr } = req.body;
+    const { name, longitude, latitude, googleId, isRequest, isDraft, categoryArr, websiteUrl } = req.body;
 
     const resRemoveCat = await Restaurant.findOne({
       where: {
@@ -285,6 +286,9 @@ exports.updateRestaurant = async (req, res, next) => {
     }
     if (isDraft) {
       restaurantToUpdate.isDraft = isDraft
+    }
+    if (websiteUrl) {
+      restaurantToUpdate.isDraft = websiteUrl
     }
 
     const catLength = await categoryArr.length
