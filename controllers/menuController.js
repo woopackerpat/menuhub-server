@@ -261,7 +261,8 @@ exports.fetchMenuById = async (req, res, next) => {
       include: {
         model: User,
         attributes: ['firstName', 'lastName', 'id', 'profilePicUrl']
-      }
+      },
+      order: [['createdAt', 'DESC']]
     })
 
     const result = {
