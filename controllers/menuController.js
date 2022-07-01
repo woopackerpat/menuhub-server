@@ -306,7 +306,7 @@ exports.modMenuOrder = async (req, res, next) => {
         'id',
         'orderNumber'
       ],
-      order: ['orderMenu', 'ASC']
+      order: ['orderNumber', 'ASC']
     })
 
     res.status(201).json(updatedOrder)
