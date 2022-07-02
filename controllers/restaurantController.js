@@ -229,7 +229,7 @@ exports.updateRestaurant = async (req, res, next) => {
 
     const userId = req.user.id
     const restaurantId = req.params.restaurantid
-    const { name, longitude, latitude, googleId, isRequest, isDraft, categoryArr, websiteUrl } = req.body;
+    const { name, longitude, latitude, googleId, isRequest, isDraft, categoryArr, websiteUrl, number, lineId } = req.body;
 
     const resRemoveCat = await Restaurant.findOne({
       where: {
@@ -283,9 +283,9 @@ exports.updateRestaurant = async (req, res, next) => {
     if (googleId) {
       restaurantToUpdate.googleId = googleId
     }
-    // if (isRequest) {
-    //   restaurantToUpdate.isRequest = category
-    // }
+    if (isRequest) {
+      restaurantToUpdate.isRequest = isRequest
+    }
     if (isDraft === 'publish') {
       restaurantToUpdate.isDraft = true
     }
@@ -293,7 +293,13 @@ exports.updateRestaurant = async (req, res, next) => {
       restaurantToUpdate.isDraft = false
     }
     if (websiteUrl) {
-      restaurantToUpdate.isDraft = websiteUrl
+      restaurantToUpdate.websiteUrl = websiteUrl
+    }
+    if (number) {
+      restaurantToUpdate.number = number
+    }
+    if (lineId) {
+      restaurantToUpdate.lineId = lineId
     }
 
     if (categoryArr) {
