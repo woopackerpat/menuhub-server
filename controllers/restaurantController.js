@@ -283,9 +283,9 @@ exports.updateRestaurant = async (req, res, next) => {
     if (googleId) {
       restaurantToUpdate.googleId = googleId
     }
-    if (isRequest) {
-      restaurantToUpdate.isRequest = category
-    }
+    // if (isRequest) {
+    //   restaurantToUpdate.isRequest = category
+    // }
     if (isDraft === 'publish') {
       restaurantToUpdate.isDraft = true
     }
