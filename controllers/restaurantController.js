@@ -301,7 +301,9 @@ exports.updateRestaurant = async (req, res, next) => {
     if (lineId) {
       restaurantToUpdate.lineId = lineId
     }
-
+    
+    await restaurantToUpdate.save()
+    
     if (categoryArr) {
       const catLength = await categoryArr.length
   
@@ -324,7 +326,6 @@ exports.updateRestaurant = async (req, res, next) => {
     }
     
 
-    await restaurantToUpdate.save()
 
     const updatedRestaurant = await Restaurant.findOne({
       where: {
