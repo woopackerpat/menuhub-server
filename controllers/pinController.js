@@ -109,6 +109,10 @@ exports.getMyPinById = async (req, res, next) => {
       include: {
         model: Restaurant,
         as: "Restaurants",
+        include: {
+          model: Menu,
+          as: "Menus",
+        },
       },
     })
 
