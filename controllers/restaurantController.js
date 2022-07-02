@@ -240,19 +240,21 @@ exports.updateRestaurant = async (req, res, next) => {
         model: Category
       }
     });
-    
-    const catRemove = await Category.findAll({
-      include: {
-        model: Restaurant,
-        where: {
-          id: restaurantId
+
+    if (resRemoveCat.Category) {
+      const catRemove = await Category.findAll({
+        include: {
+          model: Restaurant,
+          where: {
+            id: restaurantId
+          }
         }
-      }
-    })
-
-    await resRemoveCat.removeCategory(catRemove)
-
-    await resRemoveCat.save()
+      })
+  
+      await resRemoveCat.removeCategory(catRemove)
+  
+      await resRemoveCat.save()
+    }
 
     const restaurantToUpdate = await Restaurant.findOne({
       where: {
