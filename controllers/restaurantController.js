@@ -330,6 +330,9 @@ exports.updateRestaurant = async (req, res, next) => {
       }
     });
 
+    console.log(restaurantToUpdate)
+    console.log(updatedRestaurant)
+
     res.status(201).json({ updatedRestaurant });
   } catch (err) {
     next(err)
