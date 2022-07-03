@@ -122,7 +122,7 @@ exports.suggestions = async (req, res, next) => {
                     as: 'Likes'
                 }
             ],
-            attributes: ['name', 'id', 'click', 'Categories', 'Likes']
+            attributes: ['name', 'id', 'click']
         });
 
         let resultArr = []
