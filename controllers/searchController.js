@@ -3,12 +3,13 @@ const { Restaurant, Menu, User, Category, Like } = require('../models');
 const createError = require('../utils/createError');
 const { getDistance } = require('geolib')
 
-const totalScore = (refArr, comArr, currentClick) => {
+const totalScore = (refArr, comArr, currentClick, currentLike) => {
     const matchArr = refArr.filter(category => comArr.includes(category))
     const matchScore = matchArr.length * 30
 
-    const clickScore = currentClick * 0.5
-    return matchScore + clickScore
+    const clickScore = currentClick * 0.2
+    const likeScore = currentLike * 0.5
+    return matchScore + clickScore + likeScore
 }
 
 const distanceCalc = (center, lat, lng) => {
@@ -111,11 +112,17 @@ exports.suggestions = async (req, res, next) => {
                     [Op.notLike]: `%${nameLowercase}%`
                 }
             },
-            include: {
-                model: Category,
-                as: 'Categories'
-            },
-            attributes: ['name', 'id', 'click']
+            include: [
+                {
+                    model: Category,
+                    as: 'Categories'
+                },
+                {
+                    model: Like,
+                    as: 'Likes'
+                }
+            ],
+            attributes: ['name', 'id', 'click', 'Categories', 'Likes']
         });
 
         let resultArr = []
@@ -127,16 +134,18 @@ exports.suggestions = async (req, res, next) => {
             let comArr = currentRestaurant.Categories
 
             let currentClick = currentRestaurant.click
+            let currentLike = currentRestaurant.Likes
 
-            let score = totalScore(refArr, comArr, currentClick)
+            let score = totalScore(refArr, comArr, currentClick, currentLike)
 
-            const { click, name, id } = currentRestaurant
+            const { click, name, id, Likes } = currentRestaurant
 
             listRestaurant = {
                 Score: score,
                 name,
                 id,
                 click,
+                Likes,
             }
 
             resultArr.push(listRestaurant)
@@ -270,7 +279,8 @@ exports.map = async (req, res, next) => {
                 address,
                 isOfficial,
                 Menus,
-                User
+                User,
+                Like
             } = foundRestaurants[i]
 
             if (distance < maxDistance) {
@@ -286,7 +296,8 @@ exports.map = async (req, res, next) => {
                     address,
                     isOfficial,
                     Menus,
-                    User
+                    User,
+                    Like
                 }
 
                 mapList.push(listRestaurant)
