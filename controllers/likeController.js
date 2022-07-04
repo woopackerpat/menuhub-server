@@ -4,12 +4,12 @@ const createError = require('../utils/createError');
 exports.checkLike = async (req, res, next) => {
     try {
         const userId = req.user.id
-        const menuId = req.params.menuId
+        const restaurantId = req.params.menuId
 
         const like = await Like.findOne({
             where: {
                 userId,
-                menuId
+                restaurantId
             }
         });
 
