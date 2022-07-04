@@ -5,10 +5,11 @@ const createError = require('../utils/createError');
 exports.fetchAllRestaurantsOrdered = async (req, res, next) => {
   try {
     const currentPage = req.query.page
+    const limit = req.query.limit
     const nextPage = (currentPage*1) + 1
 
-    const offset = (currentPage-1) * 30
-    const limit = 30
+    const offset = (currentPage-1) * limit
+    // const limit = 30
     console.log(offset)
 
     const totalRecords = await Restaurant.count({
