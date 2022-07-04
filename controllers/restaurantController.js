@@ -7,8 +7,9 @@ exports.fetchAllRestaurantsOrdered = async (req, res, next) => {
     const currentPage = req.query.page
     const nextPage = (currentPage*1) + 1
 
-    const offset = currentPage * 30
+    const offset = (currentPage-1) * 30
     const limit = 30
+    console.log(offset)
 
     const totalRecords = await Restaurant.count({
       where: {
