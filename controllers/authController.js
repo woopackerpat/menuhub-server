@@ -24,6 +24,10 @@ exports.googleLogin = async (req, res, next) => {
         profilePicUrl: payload.picture,
         googleId: payload.sub,
       });
+      await Pin.create({
+        name: 'My first board',
+        userId: user.id
+      })
     }
     const user = await User.findOne({
       where: { googleId: payload.sub },
@@ -86,9 +90,6 @@ exports.register = async (req, res, next) => {
       name: 'My first board',
       userId: user.id
     })
-
-    console.log(user.id)
-    console.log(defaultPin)
 
     const token = genToken({ id: user.id });
     res.status(201).json({ token });
