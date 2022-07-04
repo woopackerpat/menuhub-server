@@ -88,7 +88,7 @@ exports.getMyPins = async (req, res, next) => {
           attributes: ["imageUrl"],
         },
       },
-      order: ['createdAt', 'ASC']
+      order: [['createdAt', 'ASC']]
     })
 
     res.status(200).json(myPins)
@@ -135,7 +135,7 @@ exports.getPinSuggestions = async (req, res, next) => {
         userId,
       },
       attributes: ["id", "name", "createdAt"],
-      order: ['createdAt', 'ASC']
+      order: [['createdAt', 'ASC']]
     })
 
     // console.log(allPins)
