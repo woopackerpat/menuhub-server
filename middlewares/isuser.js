@@ -22,6 +22,9 @@ module.exports = async (req, res, next) => {
       },
     });
     if (!user) {
+        req.user = {
+            id: "no"
+        }
       next()
     }
     req.user = user;

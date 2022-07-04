@@ -268,7 +268,7 @@ exports.fetchMenuById = async (req, res, next) => {
 
     let like = 0
 
-    if (userId) {
+    if (userId !== 'not') {
       like = await Like.findOne({
         where: {
           userId,
