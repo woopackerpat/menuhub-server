@@ -87,6 +87,9 @@ exports.register = async (req, res, next) => {
       userId: user.id
     })
 
+    console.log(user.id)
+    console.log(defaultPin)
+
     const token = genToken({ id: user.id });
     res.status(201).json({ token });
   } catch (err) {
