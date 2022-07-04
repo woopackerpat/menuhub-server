@@ -230,11 +230,11 @@ exports.map = async (req, res, next) => {
                 {
                     model: Menu,
                     as: 'Menus',
-                    attributes: ["orderNumber", "imageUrl"],
+                    attributes: ["orderNumber", "imageUrl", "title"],
                 },
                 {
                     model: User,
-                    attributes: ["orderNumber", "imageUrl", "title"],
+                    attributes: ["id", "firstName", "lastName", 'profilePicUrl']
                 },
                 {
                     model: Category,
