@@ -4,6 +4,20 @@ const createError = require('../utils/createError');
 // Fetch All Restaurants
 exports.fetchAllRestaurantsOrdered = async (req, res, next) => {
   try {
+    const currentPage = req.query.page
+    const nextPage = currentPage + 1
+
+    const offset = currentPage * 30
+    const limit = 30
+
+    const totalRecords = await Restaurant.count({
+      where: {
+        isDraft: false
+      }
+    })
+
+    const totalPages = Math.ceil(totalRecords/30)*30 
+
     const allRestaurant = await Restaurant.findAll({
       where: {
         isDraft: false,
@@ -28,11 +42,13 @@ exports.fetchAllRestaurantsOrdered = async (req, res, next) => {
         }
       ],
       order: [['isOfficial', 'DESC'], ['createdAt', 'DESC'], [Menu, 'orderNumber', 'ASC']],
+      offset, 
+      limit
     });
 
-    const hasRestaurant = allRestaurant.length;
+    // const hasRestaurant = allRestaurant.length;
 
-    res.status(201).json({ allRestaurant, hasRestaurant });
+    res.status(201).json({ allRestaurant, nextPage, totalPages });
   } catch (err) {
     next(err);
   }
