@@ -82,7 +82,7 @@ exports.register = async (req, res, next) => {
       password: hashedPassword,
     });
 
-    const defaultPin = Pin.create({
+    const defaultPin = await Pin.create({
       name: 'My first board',
       userId: user.id
     })
