@@ -6,6 +6,7 @@ const likeController = require('../controllers/likeController');
 const searchController = require('../controllers/searchController');
 const authenticate = require('../middlewares/authenticate');
 const admin = require('../middlewares/admin');
+const isuser = require('../middlewares/isuser');
 
 const router = express.Router();
 
@@ -35,7 +36,7 @@ router.post('/new', authenticate, restaurantController.createRestaurant);
 router.patch('/update/:restaurantid', authenticate, restaurantController.updateRestaurant)
 router.patch('/click/:restaurantid', restaurantController.click)
 
-router.get('/menuall/:restaurantid', menuController.fetchMenus)
+router.get('/menuall/:restaurantid', isuser, menuController.fetchMenus)
 router.get('/menu/:menuid', menuController.fetchMenuById)
 router.post('/menu/:restaurantid', authenticate, menuController.createMenu)
 router.patch('/menu/:menuid', authenticate, menuController.updateMenu)

@@ -1,4 +1,4 @@
-const { Restaurant, Menu, User, Comment } = require('../models');
+const { Restaurant, Menu, User, Comment, Like } = require('../models');
 const createError = require('../utils/createError');
 
 exports.createMenu = async (req, res, next) => {
@@ -227,6 +227,7 @@ exports.fetchMenus = async (req, res, next) => {
 exports.fetchMenuById = async (req, res, next) => {
   try {
     const menuId = req.params.menuid
+    const userId = req.user.id
 
     const menu = await Menu.findOne({
       where: {
@@ -245,11 +246,11 @@ exports.fetchMenuById = async (req, res, next) => {
       }
     })
 
-    const userId = restaurant.dataValues.userId
+    const creatorId = restaurant.dataValues.userId
 
     const user = await User.findOne({
       where: {
-        id: userId
+        id: creatorId
       },
       attributes: ["id", "firstName", "lastName", 'profilePicUrl']
     })
@@ -265,11 +266,19 @@ exports.fetchMenuById = async (req, res, next) => {
       order: [['createdAt', 'DESC']]
     })
 
+    const like = await Like.findOne({
+      where: {
+        userId,
+        menuId
+      }
+    })
+
     const result = {
       "Menu": menu,
       "Restaurant": restaurant,
       "Creator": user,
-      "Comments": comments
+      "Comments": comments,
+      "isLike": like.length
     }
 
     res.status(200).json(result)
