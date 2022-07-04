@@ -266,12 +266,16 @@ exports.fetchMenuById = async (req, res, next) => {
       order: [['createdAt', 'DESC']]
     })
 
-    const like = await Like.findOne({
-      where: {
-        userId,
-        menuId
-      }
-    })
+    let like = 0
+
+    if (userId) {
+      like = await Like.findOne({
+        where: {
+          userId,
+          menuId
+        }
+      })
+    }
 
     const result = {
       "Menu": menu,
