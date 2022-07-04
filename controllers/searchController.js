@@ -280,7 +280,7 @@ exports.map = async (req, res, next) => {
                 isOfficial,
                 Menus,
                 User,
-                Like
+                Likes
             } = foundRestaurants[i]
 
             if (distance < maxDistance) {
@@ -297,7 +297,7 @@ exports.map = async (req, res, next) => {
                     isOfficial,
                     Menus,
                     User,
-                    Like
+                    Likes
                 }
 
                 mapList.push(listRestaurant)
