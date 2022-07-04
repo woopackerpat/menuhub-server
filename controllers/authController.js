@@ -1,6 +1,6 @@
 const createError = require('../utils/createError');
 const bcrypt = require('bcryptjs');
-const { User } = require('../models');
+const { User, Pin } = require('../models');
 const jwt = require('jsonwebtoken');
 // const { Op } = require('sequelize');
 
@@ -81,6 +81,11 @@ exports.register = async (req, res, next) => {
       email,
       password: hashedPassword,
     });
+
+    const defaultPin = Pin.create({
+      name: 'My first board',
+      userId: user.id
+    })
 
     const token = genToken({ id: user.id });
     res.status(201).json({ token });
