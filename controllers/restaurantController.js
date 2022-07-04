@@ -17,7 +17,7 @@ exports.fetchAllRestaurantsOrdered = async (req, res, next) => {
       }
     })
 
-    const totalPages = Math.ceil(totalRecords/30) 
+    // const totalPages = Math.ceil(totalRecords/30) 
 
     const allRestaurant = await Restaurant.findAll({
       where: {
@@ -49,7 +49,7 @@ exports.fetchAllRestaurantsOrdered = async (req, res, next) => {
 
     // const hasRestaurant = allRestaurant.length;
 
-    res.status(201).json({ allRestaurant, nextPage, totalPages });
+    res.status(201).json({ allRestaurant, nextPage, totalRecords });
   } catch (err) {
     next(err);
   }
