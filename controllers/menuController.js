@@ -205,7 +205,7 @@ exports.fetchMenus = async (req, res, next) => {
       where: {
         id: userId
       },
-      attributes: ["id", "firstName", "lastName"]
+      attributes: ["id", "firstName", "lastName", 'profilePicUrl']
 
     })
 
