@@ -227,7 +227,6 @@ exports.fetchMenus = async (req, res, next) => {
 exports.fetchMenuById = async (req, res, next) => {
   try {
     const menuId = req.params.menuid
-    const userId = req.user.id
 
     const menu = await Menu.findOne({
       where: {
@@ -268,21 +267,11 @@ exports.fetchMenuById = async (req, res, next) => {
 
     let like = 0
 
-    if (userId !== 'not') {
-      like = await Like.findOne({
-        where: {
-          userId,
-          menuId
-        }
-      })
-    }
-
     const result = {
       "Menu": menu,
       "Restaurant": restaurant,
       "Creator": user,
       "Comments": comments,
-      "isLike": like.length
     }
 
     res.status(200).json(result)
