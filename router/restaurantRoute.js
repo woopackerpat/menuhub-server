@@ -36,8 +36,8 @@ router.post('/new', authenticate, restaurantController.createRestaurant);
 router.patch('/update/:restaurantid', authenticate, restaurantController.updateRestaurant)
 router.patch('/click/:restaurantid', restaurantController.click)
 
-router.get('/menuall/:restaurantid', isuser, menuController.fetchMenus)
-router.get('/menu/:menuid', menuController.fetchMenuById)
+router.get('/menuall/:restaurantid', menuController.fetchMenus)
+router.get('/menu/:menuid', isuser, menuController.fetchMenuById)
 router.post('/menu/:restaurantid', authenticate, menuController.createMenu)
 router.patch('/menu/:menuid', authenticate, menuController.updateMenu)
 router.patch('/menuimage', authenticate, menuController.updateImageMenu)
