@@ -48,7 +48,7 @@ router.patch('/comment', authenticate, commentController.updateComment)
 router.delete('/comment/:commentid', authenticate, commentController.deleteComment)
 
 router.get('/getlike/:menuId', authenticate, likeController.checkLike)
-router.put('/like/:restaurantid', authenticate, likeController.cycleLike)
+router.patch('/like/:restaurantid', authenticate, likeController.cycleLike)
 
 router.post('/suggestions', searchController.suggestions)
 router.post('/search', searchController.search)
