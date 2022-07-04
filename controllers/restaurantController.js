@@ -5,7 +5,7 @@ const createError = require('../utils/createError');
 exports.fetchAllRestaurantsOrdered = async (req, res, next) => {
   try {
     const currentPage = req.query.page
-    const nextPage = currentPage + 1
+    const nextPage = (currentPage*1) + 1
 
     const offset = currentPage * 30
     const limit = 30
@@ -16,7 +16,7 @@ exports.fetchAllRestaurantsOrdered = async (req, res, next) => {
       }
     })
 
-    const totalPages = Math.ceil(totalRecords/30)*30 
+    const totalPages = Math.ceil(totalRecords/30) 
 
     const allRestaurant = await Restaurant.findAll({
       where: {
