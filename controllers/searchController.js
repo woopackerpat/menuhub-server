@@ -4,16 +4,16 @@ const createError = require('../utils/createError');
 const { getDistance } = require('geolib')
 
 const totalScore = (refArr, comArr, currentClick, currentLike) => {
-    // const matchArr = refArr.filter(category => comArr.includes(category))
-    const compare = (arr1, arr2) => arr1.filter(v => arr2.includes(v)).length;
-    const match = compare(refArr, comArr)
-    const matchScore = match * 30
 
-    console.log(match)
-    console.log(matchScore)
+    const refMap = refArr.map(object => object = object.name)
+    const comMap = comArr.map(object => object = object.name)
 
-    const clickScore = currentClick * 0.2
-    const likeScore = currentLike * 0.5
+    const matches = refMap.filter(ref => comMap.includes(ref))
+
+    const matchScore = matches.length * 30
+
+    const clickScore = currentClick * 1
+    const likeScore = currentLike * 2
     return matchScore + clickScore + likeScore
 }
 
@@ -138,6 +138,8 @@ exports.suggestions = async (req, res, next) => {
 
             const refArr = refRestaurant.Categories
             let comArr = currentRestaurant.Categories
+            // console.log(JSON.stringify(comArr, null, 2))
+            // console.log(JSON.stringify(refArr, null, 2))
 
             let currentClick = currentRestaurant.click
             let currentLike = currentRestaurant.Likes
