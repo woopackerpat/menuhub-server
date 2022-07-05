@@ -26,7 +26,7 @@ exports.googleLogin = async (req, res, next) => {
       });
       await Pin.create({
         name: 'My first board',
-        userId: userUser.id
+        userId: newUser.id
       })
     }
     const user = await User.findOne({
