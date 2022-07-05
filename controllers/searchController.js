@@ -207,6 +207,7 @@ exports.map = async (req, res, next) => {
                     as: 'Likes'
                 }
             ],
+            order: [[Menu, 'orderNumber', 'ASC']]
         });
 
         const userRestaurants = await Restaurant.findAll({
@@ -245,6 +246,7 @@ exports.map = async (req, res, next) => {
                     as: 'Likes'
                 }
             ],
+            order: [[Menu, 'orderNumber', 'ASC']]
         });
 
         const temp = [...officialRestaurants, ...userRestaurants]
