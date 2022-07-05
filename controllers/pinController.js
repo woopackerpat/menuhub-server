@@ -114,8 +114,8 @@ exports.getMyPinById = async (req, res, next) => {
           model: Menu,
           as: "Menus",
         },
-        order: [[Menu, 'orderNumber', 'ASC']]
       },
+      order: [[Restaurant, Menu, 'orderNumber', 'ASC']]
     })
 
     if (!pinById) {
