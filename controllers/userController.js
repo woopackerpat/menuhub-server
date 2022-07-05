@@ -55,7 +55,7 @@ exports.updateUser = async (req, res, next) => {
     }
 
     const updatedUser = await user.save();
-    res.status(200).json({ updatedUser });
+    res.status(200).json({ updatedUser, message: 'Your profile has been updated' });
   } catch (err) {
     next(err);
   }
