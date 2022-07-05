@@ -63,6 +63,7 @@ exports.search = async (req, res, next) => {
                     as: 'Likes'
                 }
             ],
+            order: [[Menu, 'orderNumber', 'ASC']]
         });
 
         res.status(200).json(foundByName)
