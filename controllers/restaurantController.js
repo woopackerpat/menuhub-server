@@ -44,7 +44,7 @@ exports.fetchAllRestaurantsOrdered = async (req, res, next) => {
           as: 'Likes'
         }
       ],
-      order: [['isOfficial', 'DESC'], ['createdAt', 'DESC'], [Menu, 'orderNumber', 'ASC']],
+      order: [['isOfficial', 'DESC'], ['createdAt', 'ASC'], [Menu, 'orderNumber', 'ASC']],
       offset, 
       limit
     });
