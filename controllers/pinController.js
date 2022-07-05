@@ -55,7 +55,7 @@ exports.updatePin = async (req, res, next) => {
 exports.destroyPin = async (req, res, next) => {
   try {
     const userId = req.user.id
-    const { pinId } = req.body
+    const pinId = req.query.pinId
 
     const pinToDestroy = await Pin.findOne({
       where: {
@@ -85,10 +85,10 @@ exports.getMyPins = async (req, res, next) => {
         include: {
           model: Menu,
           as: "Menus",
-          attributes: ["imageUrl"],
+          attributes: ["imageUrl", "orderNumber"],
         },
       },
-      order: [['createdAt', 'ASC']]
+      order: [[Menu, 'orderNumber', 'ASC']]
     })
 
     res.status(200).json(myPins)
@@ -115,6 +115,7 @@ exports.getMyPinById = async (req, res, next) => {
           as: "Menus",
         },
       },
+      order: [[Menu, 'orderNumber', 'ASC']]
     })
 
     if (!pinById) {
