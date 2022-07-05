@@ -161,7 +161,7 @@ exports.suggestions = async (req, res, next) => {
             return b.Score - a.Score
         })
 
-        res.status(200).json(result)
+        res.status(200).json({result, allRestaurants})
     } catch (err) {
         next(err)
     }
