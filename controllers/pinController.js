@@ -188,7 +188,8 @@ exports.addToPin = async (req, res, next) => {
 exports.removeFromPin = async (req, res, next) => {
   try {
     const userId = req.user.id
-    const { pinId, restaurantId } = req.body
+    const restaurantId  = req.query.restaurantId
+    const pinId = req.query.pinId
 
     const foundPin = await Pin.findOne({
       where: {
