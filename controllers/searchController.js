@@ -6,7 +6,7 @@ const { getDistance } = require('geolib')
 const totalScore = (refArr, comArr, currentClick, currentLike) => {
     const matchArr = refArr.filter(category => comArr.includes(category))
     const matchScore = matchArr.length * 30
-    console.log(matchScore)
+    console.log(matchArr)
 
     const clickScore = currentClick * 0.2
     const likeScore = currentLike * 0.5
