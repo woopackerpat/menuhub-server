@@ -17,7 +17,7 @@ exports.googleLogin = async (req, res, next) => {
       where: { googleId: payload.sub },
     });
     if (!existingUser) {
-      await User.create({
+      const newUser = await User.create({
         firstName: payload.given_name,
         lastName: payload.family_name,
         email: payload.email,
@@ -26,7 +26,7 @@ exports.googleLogin = async (req, res, next) => {
       });
       await Pin.create({
         name: 'My first board',
-        userId: user.id
+        userId: userUser.id
       })
     }
     const user = await User.findOne({
