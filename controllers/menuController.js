@@ -209,13 +209,19 @@ exports.fetchMenus = async (req, res, next) => {
 
     })
 
+    const posts = await Restaurant.count({
+      where: {
+        userId
+      }
+    })
 
     const hasMenus = foundMenus.length
 
     const result = {
       "Menus": foundMenus,
       "hasMenus": hasMenus,
-      "Creator": user
+      "Creator": user,
+      posts
     }
 
     res.status(200).json(result)
