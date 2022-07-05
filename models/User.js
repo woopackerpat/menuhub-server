@@ -40,10 +40,10 @@ module.exports = (sequelize, DataTypes) => {
       profilePicUrl: {
         type: DataTypes.STRING,
         // defaultValue: 'https://picsum.photos/200',
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
+        // allowNull: false,
+        // validate: {
+        //   notEmpty: true,
+        // },
       },
       googleId: {
         type: DataTypes.STRING,
