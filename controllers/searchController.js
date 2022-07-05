@@ -4,10 +4,13 @@ const createError = require('../utils/createError');
 const { getDistance } = require('geolib')
 
 const totalScore = (refArr, comArr, currentClick, currentLike) => {
-    const matchArr = refArr.filter(category => comArr.includes(category))
-    const matchScore = matchArr.length * 30
-    console.log(refArr)
-    console.log(comArr)
+    // const matchArr = refArr.filter(category => comArr.includes(category))
+    const compare = (arr1, arr2) => arr1.filter(v => arr2.includes(v)).length;
+    const match = compare(refArr, comArr)
+    const matchScore = match * 30
+
+    console.log(match)
+    console.log(matchScore)
 
     const clickScore = currentClick * 0.2
     const likeScore = currentLike * 0.5
