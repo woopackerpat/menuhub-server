@@ -87,8 +87,8 @@ exports.getMyPins = async (req, res, next) => {
           as: "Menus",
           attributes: ["imageUrl", "orderNumber"],
         },
+        order: [[Menu, 'orderNumber', 'ASC']]
       },
-      order: [[Menu, 'orderNumber', 'ASC']]
     })
 
     res.status(200).json(myPins)
@@ -114,8 +114,8 @@ exports.getMyPinById = async (req, res, next) => {
           model: Menu,
           as: "Menus",
         },
+        order: [[Menu, 'orderNumber', 'ASC']]
       },
-      order: [[Menu, 'orderNumber', 'ASC']]
     })
 
     if (!pinById) {
