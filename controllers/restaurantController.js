@@ -433,8 +433,7 @@ exports.fetchRequests = async (req, res, next) => {
 exports.deleteRestaurant = async (req, res, next) => {
   try {
     const userId = req.user.id 
-    const restaurantId = req.restaurantId
-    console.log(restaurantId)
+    const restaurantId = req.params.restaurantId
 
     const restaurantToDelete = await Restaurant.findOne({
       where:{
