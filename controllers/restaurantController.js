@@ -5,10 +5,10 @@ const createError = require('../utils/createError');
 exports.fetchAllRestaurantsOrdered = async (req, res, next) => {
   try {
     const currentPage = req.query.page
-    const limit = (req.query.limit*1)
-    const nextPage = (currentPage*1) + 1
+    const limit = (req.query.limit * 1)
+    const nextPage = (currentPage * 1) + 1
 
-    const offset = (currentPage-1) * limit
+    const offset = (currentPage - 1) * limit
     // const limit = 30
     console.log(offset)
     console.log(limit)
@@ -34,7 +34,7 @@ exports.fetchAllRestaurantsOrdered = async (req, res, next) => {
         {
           model: User,
           attributes: ["id", "firstName", "lastName", 'profilePicUrl']
-        }, 
+        },
         {
           model: Category,
           as: 'Categories'
@@ -45,7 +45,7 @@ exports.fetchAllRestaurantsOrdered = async (req, res, next) => {
         }
       ],
       order: [['isOfficial', 'DESC'], ['createdAt', 'ASC'], [Menu, 'orderNumber', 'ASC']],
-      offset, 
+      offset,
       limit
     });
 
@@ -61,7 +61,7 @@ exports.fetchAllRestaurantsOrdered = async (req, res, next) => {
 exports.fetchMyDraftRestaurants = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    
+
     const foundMyDraftRestaurants = await Restaurant.findAll({
       where: {
         userId,
@@ -86,7 +86,7 @@ exports.fetchMyDraftRestaurants = async (req, res, next) => {
         //   as: 'Likes'
         // }
       ],
-      order: [['isOfficial', 'DESC'],['createdAt', 'DESC'], [Menu, 'orderNumber', 'ASC']],
+      order: [['isOfficial', 'DESC'], ['createdAt', 'DESC'], [Menu, 'orderNumber', 'ASC']],
     });
 
     const hasRestaurant = foundMyDraftRestaurants.length;
@@ -170,11 +170,11 @@ exports.createRestaurant = async (req, res, next) => {
 
     if (categoryArr) {
       const catLength = categoryArr.length
-      for (let i = 0 ; i < catLength ; i++) {
-        
+      for (let i = 0; i < catLength; i++) {
+
         let foundCat = await Category.findOne({
           where: {
-            name: categoryArr[i] 
+            name: categoryArr[i]
           }
         });
 
@@ -269,9 +269,9 @@ exports.updateRestaurant = async (req, res, next) => {
           }
         }
       })
-  
+
       await resRemoveCat.removeCategory(catRemove)
-  
+
       await resRemoveCat.save()
     }
 
@@ -292,13 +292,13 @@ exports.updateRestaurant = async (req, res, next) => {
     if (name) {
       restaurantToUpdate.name = name
       restaurantToUpdate.lowercase = name.toLowerCase()
-    } 
+    }
     if (longitude) {
       restaurantToUpdate.longitude = longitude
     }
     if (latitude) {
       restaurantToUpdate.latitude = latitude
-    } 
+    }
     if (googleId) {
       restaurantToUpdate.googleId = googleId
     }
@@ -320,30 +320,30 @@ exports.updateRestaurant = async (req, res, next) => {
     if (lineId) {
       restaurantToUpdate.lineId = lineId
     }
-    
+
     await restaurantToUpdate.save()
-    
+
     if (categoryArr) {
       const catLength = await categoryArr.length
-  
-  
-      for (let i = 0 ; i < catLength ; i++) {
+
+
+      for (let i = 0; i < catLength; i++) {
         let foundCat = await Category.findOne({
           where: {
-            name: categoryArr[i] 
+            name: categoryArr[i]
           }
         });
-  
+
         if (foundCat) {
           await restaurantToUpdate.addCategory(foundCat)
         }
-  
+
         if (!foundCat) {
           createError(`The category ${categoryArr[i]} does not exist`, 400)
         }
       }
     }
-    
+
 
 
     const updatedRestaurant = await Restaurant.findOne({
@@ -380,11 +380,11 @@ exports.click = async (req, res, next) => {
     }
 
     toClick.click = (toClick.click + 1)
-    
+
     await toClick.save()
 
     res.status(200).json()
-  } catch(err) {
+  } catch (err) {
     next(err)
   }
 }
@@ -392,7 +392,7 @@ exports.click = async (req, res, next) => {
 exports.approve = async (req, res, next) => {
   try {
     const id = req.params.restaurantid
-    const {approve} = req.body
+    const { approve } = req.body
     const updatedRestaurant = await Restaurant.findOne({
       where: {
         id
@@ -403,13 +403,13 @@ exports.approve = async (req, res, next) => {
       updatedRestaurant.isRequest = false
       updatedRestaurant.isOfficial = true
       await updatedRestaurant.save()
-      res.status(200).json({isApproved: 1})
+      res.status(200).json({ isApproved: 1 })
     }
     if (!approve) {
       updatedRestaurant.isRequest = false
       updatedRestaurant.isOfficial = false
       await updatedRestaurant.save()
-      res.status(200).json({isApproved: 0})
+      res.status(200).json({ isApproved: 0 })
     }
   } catch (err) {
     next(err)
@@ -425,6 +425,30 @@ exports.fetchRequests = async (req, res, next) => {
     })
 
     res.status(200).json(isRequest)
+  } catch (err) {
+    next(err)
+  }
+}
+
+exports.deleteRestaurant = async (req, res, next) => {
+  try {
+    const userId = req.user.id 
+    const restaurantId = req.restaurantId
+
+    const restaurantToDelete = await Restaurant.findOne({
+      where:{
+        id: restaurantId,
+        userId
+      }
+    });
+
+    if (!restaurantToDelete) {
+      createError('This restaurant does not belong to you', 400)
+    }
+
+    await restaurantToDelete.destroy();
+    
+    res.status(204).json()
   } catch (err) {
     next(err)
   }

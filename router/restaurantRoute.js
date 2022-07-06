@@ -31,6 +31,7 @@ router.get(
 
 // Creating a new restaurant
 // Init a restaurant
+router.delete('/delete/:restaurantId', authenticate, restaurantController.deleteRestaurant)
 router.post('/new', authenticate, restaurantController.createRestaurant);
 router.patch('/update/:restaurantid', authenticate, restaurantController.updateRestaurant)
 router.patch('/click/:restaurantid', restaurantController.click)
